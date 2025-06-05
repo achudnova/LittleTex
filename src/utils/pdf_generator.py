@@ -38,6 +38,7 @@ def generate_pdf_from_latex(tex_file: str) -> Tuple[bool, Optional[str]]:
         
         # get the pdf filename
         pdf_file = os.path.splitext(base_name)[0] + ".pdf"
+        pdf_path = os.path.join(tex_dir, pdf_file)
         
         aux_extensions = [".aux", ".log", ".out"]
         for ext in aux_extensions:
@@ -49,11 +50,12 @@ def generate_pdf_from_latex(tex_file: str) -> Tuple[bool, Optional[str]]:
                 except PermissionError:
                     print(f"Warning: Could not delete auxiliary file {aux_file}. It may be in use.")
         
-        if result.returncode == 0 and os.path.exists(pdf_file):
-            print(f"PDF successfully generated: {pdf_file}")
+        if result.returncode == 0 and os.path.exists(pdf_path):
+            print(f"PDF successfully generated: {pdf_path}")
             return True, None
         else:
-            return False, f"Error generating PDF: {result.stderr}"
+            error_msg = result.stderr if result.stderr else "Unknown error (check if pdflatex ran correctly)"
+            return False, f"Error generating PDF: {error_msg}"
     
     except Exception as e:
         return False, f"Error running pdflatex: {str(e)}"
