@@ -7,18 +7,21 @@ from typing import List
 import argparse # helps read command-line arguments
 from src.core.renderer import render_text_to_latex
 from src.core.parser import parse_markdown_to_latex
+from src.utils.pdf_generator import generate_pdf_from_latex
 
 def main_cli() -> None:
     # 1. Setup to understand command-line arguments
     parser = argparse.ArgumentParser(description="Converts Markdown to LaTeX.")
     parser.add_argument("input_file", help="Path to the input Markdown file.")
     parser.add_argument("output_file", help="Path to the output LaTeX file.")
+    parser.add_argument("--pdf", action="store_true", help="Generate PDF from LaTeX.")
     
     # 2. Read the arguments typed by the user
     args: argparse.Namespace = parser.parse_args()
     
     input_file: str = args.input_file
     output_file: str = args.output_file
+    generate_pdf: bool = args.pdf
     
     # print what we received, just for checking
     print(f"Input file specified: {input_file}")
@@ -51,13 +54,19 @@ def main_cli() -> None:
     # 4. Call the renderer to get the full LaTeX document string
     # latex_content: str = render_text_to_latex(placeholder_content)
     
-    # 5. Write the LaTeX string to the output file
+    # 4. Write the LaTeX string to the output file
     try:
         with open(args.output_file, 'w', encoding='utf-8') as f_out:
             f_out.write(latex_document)
             print(f"LaTeX content written to {args.output_file}")
     except IOError as e:
         print(f"Error writing to output file: {e}")
+        
+    # 5. Generate pdf if requested
+    if generate_pdf:
+        success, error = generate_pdf_from_latex(output_file)
+        if not success:
+            print(error)
         
 if __name__ == "__main__":
     main_cli()
