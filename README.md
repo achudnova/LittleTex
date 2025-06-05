@@ -8,3 +8,5 @@ It should support:
 - headings (# Title, ## Section)
 - paragraphs (plain text lines)
 - basic LaTeX document structure (e.g \documentclass, \begin{document})
+
+Run: `python main.py input.md output.tex` // `python main.py input.tex output.pdf`

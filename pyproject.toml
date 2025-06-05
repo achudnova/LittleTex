@@ -1,0 +1,21 @@
+[build-system]
+requires = [
+    "setuptools>=42",
+    "wheel",
+]
+
+[project]
+name = "littletex"
+version = "0.1.0"
+description = "A minimal tool to convert Markdown to LaTeX"
+readme = "README.md"
+requires-python = ">=3.7"
+authors = [
+    { name = "Alina Chudnova"}
+]
+
+[project.scripts]
+littletex = "src.main:run_app"
+
+[tool.setuptools]
+packages = ["src", "src.core"]

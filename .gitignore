@@ -5,3 +5,8 @@ build/
 *.egg-info/
 .vscode/
 __pycache__/
+littletex.egg-info/
+examples/
+output/
+*.pyc
+.env
