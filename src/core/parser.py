@@ -18,16 +18,26 @@ def parse_markdown_to_latex(markdown_content: str) -> List[str]:
     for line in markdown_lines:
         stripped_line: str = line.strip() # Remove leading/trailing whitespace for checking
         
-        if stripped_line.startswith("## "):
-            # Level 2 heading (subsection)
-            heading_text: str = stripped_line[3:] # get text after ## 
-            latex_output_lines.append(f"\\subsection{{{heading_text}}}")
+        if stripped_line.startswith("# "):
+            # Level 1 heading (section)
+            heading_text: str = stripped_line[2:] # get text after ## 
+            latex_output_lines.append(f"\\section{{{heading_text}}}")
             previous_line_was_blank: bool = False
             
-        elif stripped_line.startswith("# "):
-            # Level 1 heading (section)
-            heading_text: str = stripped_line[2:]
-            latex_output_lines.append(f"\\section{{{heading_text}}}")
+        elif stripped_line.startswith("## "):
+            # Level 2 heading (subsection)
+            heading_text: str = stripped_line[3:]
+            latex_output_lines.append(f"\\subsection{{{heading_text}}}")
+            previous_line_was_blank: bool = False
+        
+        elif stripped_line.startswith("### "):
+            heading_text: str = stripped_line[4:]
+            latex_output_lines.append(f"\\subsubsection{{{heading_text}}}")
+            previous_line_was_blank: bool = False
+        
+        elif stripped_line.startswith(">> "):
+            heading_text: str = stripped_line[3:]
+            latex_output_lines.append(f"\\hspace*{{2em}}{{{heading_text}}}")
             previous_line_was_blank: bool = False
             
         elif stripped_line: # line has content and is not empty
