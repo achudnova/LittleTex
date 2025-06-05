@@ -1,1 +1,7 @@
 /latenv
+.DS_Store
+dist/
+build/
+*.egg-info/
+.vscode/
+__pycache__/
