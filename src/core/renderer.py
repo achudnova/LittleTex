@@ -17,8 +17,8 @@ def render_text_to_latex(content_lines: List[str]) -> str:
     
     # 1. LaTeX Preamble
     latex_output.append("\\documentclass{article}\n")
-    latex_output.append("\\usepackage[utf8]{inputenc}\n")
-    latex_output.append("\\title{Generated Document}\n")
+    latex_output.append("\\usepackage[utf8]{inputenc, parskip}\n")
+    latex_output.append("\\title{\\textbf{Generated Document}}\n") #\title{\textbf{My Title in Bold}}
     latex_output.append("\\author{LittleTex Tool}\n")
     latex_output.append("\\date{\\today}\n")
     
@@ -26,13 +26,24 @@ def render_text_to_latex(content_lines: List[str]) -> str:
     latex_output.append("\\begin{document}\n")
     latex_output.append("\\maketitle\n")
     
+    # if content_lines:
+    #     latex_output.append("\n")
+    
+    # for line in content_lines:
+    #     latex_output.append(line)
+    
+    # if content_lines:
+    #     latex_output.append("\n")
+    
     # 3. The actual content
     latex_output.append("\n")
     if not content_lines:
         latex_output.append("No content provided.\n")
     else:
         for line in content_lines:
-            latex_output.append(line + "\n")
+            latex_output.append(line)
+            if line != "":
+                latex_output.append("\n")
     
     # 4. End of the document body
     latex_output.append("\\end{document}\n")
