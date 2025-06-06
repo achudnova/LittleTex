@@ -69,13 +69,15 @@ def extract_metadata(markdown_content: str) -> tuple[dict, str]:
     for i, line in enumerate(lines):
         line_stripped = line.strip()
         if line_stripped.startswith("@"):
-            try:
-                metadata_lines.append(i)
-                key, value = line_stripped[1:].split(":", 1)
-                metadata[key.strip()] = value.strip()
-                content_start = i + 1
-            except ValueError:
-                break
+            metadata_lines.append(i)
+            if line_stripped == "@datetoday":
+                metadata["date"] = "\\today"
+            elif ":" in line_stripped:
+                try:
+                    key, value = line_stripped[1:].split(":", 1)
+                    metadata[key.strip()] = value.strip()
+                except ValueError:
+                    pass
         elif i > 0 and not line_stripped:
             continue
         else:

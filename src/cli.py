@@ -56,7 +56,8 @@ def main_cli() -> None:
     latex_document: str = render_text_to_latex(
         parsed_latex_lines,
         title=metadata.get('title', 'Untitled'),
-        author=metadata.get('author', 'Unknown')
+        author=metadata.get('author', 'Unknown'),
+        date=metadata.get('date', '\\today')  # Use today's date if not specified
     )
     
     # 3. Prepare placeholder content for the renderer
