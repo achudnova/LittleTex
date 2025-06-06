@@ -6,7 +6,7 @@
 from typing import List
 import argparse # helps read command-line arguments
 from src.core.renderer import render_text_to_latex
-from src.core.parser import parse_markdown_to_latex
+from src.core.parser import parse_markdown_to_latex, extract_metadata
 from src.utils.pdf_generator import generate_pdf_from_latex
 
 def main_cli() -> None:
@@ -32,6 +32,16 @@ def main_cli() -> None:
     try:
         with open(input_file, 'r', encoding='utf-8') as f_in:
             markdown_content = f_in.read() # Read the whole file into one string
+        
+        metadata, content_without_metadata = extract_metadata(markdown_content)
+        # parsed_latex_lines: List[str] = parse_markdown_to_latex(content_without_metadata)
+        
+        # latex_document: str = render_text_to_latex(
+        #     parsed_latex_lines,
+        #     title=metadata.get('title', 'Untitled'),
+        #     author=metadata.get('author', 'Unknown'),
+        # )
+        
     except FileNotFoundError:
         print(f"Error: Input file '{input_file}' not found.")
         return
@@ -40,10 +50,14 @@ def main_cli() -> None:
         return
     
     # 2. Parse the Markdown content into LaTeX lines
-    parsed_latex_lines: List[str] = parse_markdown_to_latex(markdown_content)
+    parsed_latex_lines: List[str] = parse_markdown_to_latex(content_without_metadata)
     
     # 3. Render the full .tex document 
-    latex_document: str = render_text_to_latex(parsed_latex_lines)
+    latex_document: str = render_text_to_latex(
+        parsed_latex_lines,
+        title=metadata.get('title', 'Untitled'),
+        author=metadata.get('author', 'Unknown')
+    )
     
     # 3. Prepare placeholder content for the renderer
     # placeholder_content: List[str] = [

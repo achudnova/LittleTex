@@ -10,3 +10,12 @@ It should support:
 - basic LaTeX document structure (e.g \documentclass, \begin{document})
 
 Run: `python main.py input.md output.tex` // `python main.py input.tex output.pdf`
+
+## Abbreviation:
+
+- Author => `@author:`
+- Title => `@title:`
+- Indentation => `>>`
+- Heading 1 => `#`
+- Heading 2 => `##`
+- Heading 3 => `###`

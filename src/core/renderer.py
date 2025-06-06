@@ -2,7 +2,7 @@
 
 from typing import List
 
-def render_text_to_latex(content_lines: List[str]) -> str:
+def render_text_to_latex(content_lines: List[str], title: str = "Unknown", author: str = "Unknown") -> str:
     """Takes a list of lines (meant to be LaTeX later) and wraps them
     in a standard LaTeX document structure.
 
@@ -19,8 +19,8 @@ def render_text_to_latex(content_lines: List[str]) -> str:
     latex_output.append("\\documentclass{article}\n")
     latex_output.append("\\usepackage[utf8]{inputenc}\n")
     latex_output.append("\\usepackage{parskip}\n")
-    latex_output.append("\\title{\\textbf{Generated Document}}\n")
-    latex_output.append("\\author{LittleTex Tool}\n")
+    latex_output.append(f"\\title{{\\textbf{{{title}}}}}\n")
+    latex_output.append(f"\\author{{{author}}}\n")
     latex_output.append("\\date{\\today}\n")
     
     # 2. Start of the document body

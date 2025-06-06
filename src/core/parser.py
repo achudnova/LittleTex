@@ -50,3 +50,37 @@ def parse_markdown_to_latex(markdown_content: str) -> List[str]:
             previous_line_was_blank = True
     
     return latex_output_lines
+
+# extract fields from the markdown file
+def extract_metadata(markdown_content: str) -> tuple[dict, str]:
+    """Extract metadata from markdown content.
+
+    Args:
+        markdown_content (str): Raw markdown content as a string
+
+    Returns:
+        tuple[dict, str]: (metadata dict, content without metadata)
+    """
+    metadata = {}
+    lines = markdown_content.split("\n")
+    metadata_lines = []
+    
+    # process lines that start with @ as metadata
+    for i, line in enumerate(lines):
+        line_stripped = line.strip()
+        if line_stripped.startswith("@"):
+            try:
+                metadata_lines.append(i)
+                key, value = line_stripped[1:].split(":", 1)
+                metadata[key.strip()] = value.strip()
+                content_start = i + 1
+            except ValueError:
+                break
+        elif i > 0 and not line_stripped:
+            continue
+        else:
+            break
+    
+    content_lines = [line for i, line in enumerate(lines) if i not in metadata_lines]
+    content_without_metadata = "\n".join(content_lines)
+    return metadata, content_without_metadata
