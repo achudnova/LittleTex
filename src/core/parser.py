@@ -1,6 +1,6 @@
 # logic to look at each markdown line and decide how to convert it to LaTeX
 
-from typing import List
+from typing import List, Dict
 import re
 
 def parse_markdown_to_latex(markdown_content: str) -> List[str]:
@@ -63,9 +63,9 @@ def extract_metadata(markdown_content: str) -> tuple[dict, str]:
     Returns:
         tuple[dict, str]: (metadata dict, content without metadata)
     """
-    metadata = {}
+    metadata: Dict[str, str] = {}
     lines = markdown_content.split("\n")
-    metadata_lines = []
+    metadata_lines: List[str] = []
     
     # process lines that start with @ as metadata
     for i, line in enumerate(lines):
