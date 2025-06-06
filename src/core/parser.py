@@ -102,4 +102,9 @@ def format_inline_elements(text: str) -> str:
     # Bold: **text** -> \textbf{text}
     text = re.sub(r'\*\*(.*?)\*\*', r'\\textbf{\1}', text)
     
+    text = re.sub(r'\*(.*?)\*', r'\\textit{\1}', text)  # Italic: *text* -> \textit{text}
+    
+    # Code: `code` -> \texttt{code}
+    text = re.sub(r'`(.*?)`', r'\\texttt{\1}', text)
+    
     return text
