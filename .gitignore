@@ -11,3 +11,4 @@ output/
 *.pyc
 .env
 .pytest_cache/
+docs/

@@ -19,3 +19,5 @@ Run: `python main.py input.md output.tex` // `python main.py input.tex output.pd
 - Heading 1 => `#`
 - Heading 2 => `##`
 - Heading 3 => `###`
+- Custom Date Format => `@date: June 1, 2025`
+- Today's Date => `@datetoday`
