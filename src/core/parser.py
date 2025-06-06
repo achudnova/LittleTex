@@ -1,6 +1,7 @@
 # logic to look at each markdown line and decide how to convert it to LaTeX
 
 from typing import List
+import re
 
 def parse_markdown_to_latex(markdown_content: str) -> List[str]:
     """Parses a string containing multiple lines of Markdown content.
@@ -41,7 +42,8 @@ def parse_markdown_to_latex(markdown_content: str) -> List[str]:
             previous_line_was_blank: bool = False
             
         elif stripped_line: # line has content and is not empty
-            latex_output_lines.append(line + "\n")
+            formatted_line: str = format_inline_elements(line)  # Convert inline elements
+            latex_output_lines.append(formatted_line + "\n") #line + "\n"
             previous_line_was_blank: bool = False
             
         else: # empty line
@@ -86,3 +88,18 @@ def extract_metadata(markdown_content: str) -> tuple[dict, str]:
     content_lines = [line for i, line in enumerate(lines) if i not in metadata_lines]
     content_without_metadata = "\n".join(content_lines)
     return metadata, content_without_metadata
+
+def format_inline_elements(text: str) -> str:
+    """Convert Markdown inline formatting to LaTeX.
+    Converts inline elements like bold, italic, and code to LaTeX format.
+
+    Args:
+        text (str): Text with potential Markdown formatting
+
+    Returns:
+        str: Text with LaTeX formatting commands
+    """
+    # Bold: **text** -> \textbf{text}
+    text = re.sub(r'\*\*(.*?)\*\*', r'\\textbf{\1}', text)
+    
+    return text
