@@ -1,7 +1,7 @@
 # LittleTex
 
 <p align="center">
-  <img src="pics/littletex.png" alt="MeteoFlow Logo" width="200"/>
+  <img src="pics/littletex.png" alt="LittleTex Logo" width="200"/>
 </p>
 
 
