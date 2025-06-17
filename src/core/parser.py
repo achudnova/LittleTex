@@ -21,7 +21,9 @@ def parse_markdown_to_latex(markdown_content: str) -> List[str]:
         
         if stripped_line == "---":
             # Horizontal rule
+            latex_output_lines.append("\\vspace{0.3cm}")
             latex_output_lines.append("\\noindent\\hrule")
+            latex_output_lines.append("\\vspace{0.3cm}")
             previous_line_was_blank = False
             continue
         
