@@ -1,10 +1,4 @@
-# <img src="pics/littletex.png" alt="LittleTex Logo" width="30"/> LittleTex
-
-<!-- <p align="center">
-  <img src="pics/littletex.png" alt="LittleTex Logo" width="200"/>
-</p> -->
-
-
+# <img src="pics/littletex.png" alt="LittleTex Logo" width="50" style="vertical-align: middle;"/> LittleTex
 
 ## MVP
 
