@@ -19,6 +19,12 @@ def parse_markdown_to_latex(markdown_content: str) -> List[str]:
     for line in markdown_lines:
         stripped_line: str = line.strip() # Remove leading/trailing whitespace for checking
         
+        if stripped_line == "---":
+            # Horizontal rule
+            latex_output_lines.append("\\noindent\\hrule")
+            previous_line_was_blank = False
+            continue
+        
         if stripped_line.startswith("# "):
             # Level 1 heading (section)
             heading_text: str = stripped_line[2:] # get text after ## 
