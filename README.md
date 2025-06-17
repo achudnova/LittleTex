@@ -1,8 +1,9 @@
-# LittleTex
+# ![LittleTex Logo](pics/littletex.png) LittleTex
 
-<p align="center">
+<!-- <p align="center">
   <img src="pics/littletex.png" alt="LittleTex Logo" width="200"/>
-</p>
+</p> -->
+
 
 
 ## MVP
