@@ -25,6 +25,14 @@ def render_text_to_latex(
     latex_output.append("\\documentclass{article}\n")
     latex_output.append("\\usepackage[utf8]{inputenc}\n")
     latex_output.append("\\usepackage{parskip}\n")
+    latex_output.append("\\usepackage{hyperref}\n")
+    # hyperref config
+    latex_output.append("\\hypersetup{\n")
+    latex_output.append("    colorlinks=true,\n")
+    latex_output.append("    linkcolor=blue,\n")
+    latex_output.append("    urlcolor=blue,\n")
+    latex_output.append("}\n")
+    
     latex_output.append(f"\\title{{\\textbf{{{title}}}}}\n")
     latex_output.append(f"\\author{{{author}}}\n")
     # latex_output.append("\\date{\\today}\n")
