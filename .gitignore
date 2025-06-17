@@ -12,3 +12,4 @@ output/
 .env
 .pytest_cache/
 docs/
+pics/

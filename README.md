@@ -1,5 +1,10 @@
 # LittleTex
 
+<p align="center">
+  <img src="pics/littletex.png" alt="MeteoFlow Logo" width="200"/>
+</p>
+
+
 ## MVP
 
 Goal: take a simple Markdown file as input and produce a basic, compilable LaTeX file as output.
