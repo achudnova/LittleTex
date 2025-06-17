@@ -26,3 +26,13 @@ Optional: `python main.py input.md output.tex` // `python main.py input.tex outp
 - Bold Text => `**text**`
 - Italic Text => `*text*`
 - Inline Code => `code` with ``
+  
+## Basic Text Formatting
+- bold text: `**text**` -> `\textbf{text}`
+- italic text: `*text*` -> `\textit{text}`
+- inline code: `code` -> `\texttt{code}`
+
+## Links
+- `[Link text](https://example.com)` → `\href{https://example.com}{Link text}`
+
+## Horizontal Rule (Divider)
