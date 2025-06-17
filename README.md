@@ -1,4 +1,4 @@
-# ![LittleTex Logo](pics/littletex.png) LittleTex
+# <img src="pics/littletex.png" alt="LittleTex Logo" width="30"/> LittleTex
 
 <!-- <p align="center">
   <img src="pics/littletex.png" alt="LittleTex Logo" width="200"/>
