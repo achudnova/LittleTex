@@ -15,9 +15,25 @@ def parse_markdown_to_latex(markdown_content: str) -> List[str]:
     markdown_lines: List[str] = markdown_content.splitlines() # Split the input string into individual lines
     latex_output_lines: List[str] = []
     previous_line_was_blank: bool = False
+    in_bullet_list: bool = False
     
     for line in markdown_lines:
         stripped_line: str = line.strip() # Remove leading/trailing whitespace for checking
+        
+        if stripped_line.startswith("- "):
+            if not in_bullet_list:
+                latex_output_lines.append("\\begin{itemize}")
+                in_bullet_list = True
+            
+            item_content = format_inline_elements(stripped_line[2:])  # Get text after "- "
+            latex_output_lines.append(f"\\item {item_content}")
+            previous_line_was_blank = False
+            continue
+        
+        if in_bullet_list and not stripped_line.startswith("- "):
+            # End of bullet list if the next line is not a bullet point
+            latex_output_lines.append("\\end{itemize}")
+            in_bullet_list = False
         
         if stripped_line == "---":
             # Horizontal rule
