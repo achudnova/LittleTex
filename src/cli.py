@@ -1,47 +1,32 @@
-# handles the command line part
-# responsible for understand the filenames you type in the terminal (input_name.md, output_name.tex)
-# calls the render_text_to_latex() function to get the LaTeX String
-# writing the LaTeX String into the output file you specified
-
+import argparse
 from typing import List
-import argparse # helps read command-line arguments
+
+from src.core.tokenizer import Tokenizer
+from src.core.parser import Parser, extract_metadata
+from src.core.renderer import LatexRenderer
+
 from src.core.renderer_copy import render_text_to_latex
-from src.core.parser_copy import parse_markdown_to_latex, extract_metadata
 from src.utils.pdf_generator import generate_pdf_from_latex
 
 def main_cli() -> None:
-    # 1. Setup to understand command-line arguments
+    # 1. Setup and read command line arguments
     parser = argparse.ArgumentParser(description="Converts Markdown to LaTeX.")
     parser.add_argument("input_file", help="Path to the input Markdown file.")
     parser.add_argument("output_file", help="Path to the output LaTeX file.")
     parser.add_argument("--pdf", action="store_true", help="Generate PDF from LaTeX.")
-    
-    # 2. Read the arguments typed by the user
     args: argparse.Namespace = parser.parse_args()
     
     input_file: str = args.input_file
     output_file: str = args.output_file
     generate_pdf: bool = args.pdf
     
-    # print what we received, just for checking
     print(f"Input file specified: {input_file}")
     print(f"Output file specified: {output_file}")
     
-    # 1. Read the content from Markdown file
-    markdown_content: str = ""
+    # 2. Read the content from the Markdown file
     try:
         with open(input_file, 'r', encoding='utf-8') as f_in:
-            markdown_content = f_in.read() # Read the whole file into one string
-        
-        metadata, content_without_metadata = extract_metadata(markdown_content)
-        # parsed_latex_lines: List[str] = parse_markdown_to_latex(content_without_metadata)
-        
-        # latex_document: str = render_text_to_latex(
-        #     parsed_latex_lines,
-        #     title=metadata.get('title', 'Untitled'),
-        #     author=metadata.get('author', 'Unknown'),
-        # )
-        
+            markdown_content = f_in.read()
     except FileNotFoundError:
         print(f"Error: Input file '{input_file}' not found.")
         return
@@ -49,39 +34,42 @@ def main_cli() -> None:
         print(f"Error reading input file: {e}")
         return
     
-    # 2. Parse the Markdown content into LaTeX lines
-    parsed_latex_lines: List[str] = parse_markdown_to_latex(content_without_metadata)
+    # 3. Extract metadata from the raw content
+    metadata, content_without_metadata = extract_metadata(markdown_content)
     
-    # 3. Render the full .tex document 
+    # 4. Stage 1: Tokezine the content
+    tokenizer = Tokenizer()
+    tokens: List = tokenizer.tokenize(content_without_metadata)
+    
+    # 5. Stage 2: Parse the tokens into an AST
+    parser = Parser(tokens)
+    ast_document = parser.parse()
+    
+    # 6. Stage 3: Render the AST into a LaTeX string (document body)
+    latex_renderer = LatexRenderer()
+    latex_body_content: str = latex_renderer.render(ast_document)
+    
+    # 7. Use the old renderer to warp the body with the document preamble
     latex_document: str = render_text_to_latex(
-        parsed_latex_lines,
-        title=metadata.get('title', 'Untitled'),
+        content_lines=latex_body_content.splitlines(),
+        title=metadata.get('title', 'Unknown'),
         author=metadata.get('author', 'Unknown'),
-        date=metadata.get('date', '\\today')  # Use today's date if not specified
+        date=metadata.get('date', '\\today')
     )
     
-    # 3. Prepare placeholder content for the renderer
-    # placeholder_content: List[str] = [
-    #     "% This is where real content will go in future steps.\n",
-    #     "Hello from LittleTex MVP!\n"
-    # ]
-    
-    # 4. Call the renderer to get the full LaTeX document string
-    # latex_content: str = render_text_to_latex(placeholder_content)
-    
-    # 4. Write the LaTeX string to the output file
+    # 8. Write the LaTeX string to the output file
     try:
-        with open(args.output_file, 'w', encoding='utf-8') as f_out:
+        with open(output_file, 'w', encoding='utf-8') as f_out:
             f_out.write(latex_document)
-            print(f"LaTeX content written to {args.output_file}")
+            print(f"LaTeX document written to {args.output_file}")
     except IOError as e:
         print(f"Error writing to output file: {e}")
         
-    # 5. Generate pdf if requested
+    # 9. Generate PDF if requested
     if generate_pdf:
         success, error = generate_pdf_from_latex(output_file)
         if not success:
             print(error)
-        
+
 if __name__ == "__main__":
     main_cli()
