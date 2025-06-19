@@ -26,7 +26,8 @@ class LatexRenderer:
     
     def visit_paragraph(self, node: ast.ParagraphNode) -> list[str]:
         """translates a ParagraphNode into plain text with a newline"""
-        return [node.text, ""]
+        content = "".join(child.accept(self) for child in node.children)
+        return [content, ""]
     
     def visit_horizontal_rule(self, node: ast.HorizontalRuleNode) -> list[str]:
         """translates a HorizontalRuleNode into a LaTeX hrule"""
@@ -58,16 +59,41 @@ class LatexRenderer:
     
     def visit_list_item(self, node: ast.ListItemNode) -> list[str]:
         """visits a ListItemNode and renders the content inside a single list item"""
-        if not node.children:
-            return ["\\item"]   
+        inline_parts = []
+        block_lines = []
+        for child in node.children:
+            if isinstance(child, ast.ListNode):
+                block_lines.extend(child.accept(self))
+            else:
+                inline_parts.append(child.accept(self))
         
-        first_child_lines = node.children[0].accept(self)
+        item_text = "".join(inline_parts)
         
-        item_text = first_child_lines[0].strip()
-        rendered_lines = [f"\\item {item_text}"]
+        final_lines = [f"\\item {item_text}"]
         
-        if len(node.children) > 1:
-            for child in node.children[1:]:
-                rendered_lines.extend(child.accept(self))
-        
-        return rendered_lines
+        final_lines.extend(block_lines)
+               
+        return final_lines
+    
+    def visit_text(self, node: ast.TextNode) -> str:
+        """Renders plain text."""
+        return node.text
+    
+    def visit_bold(self, node: ast.BoldNode) -> str:
+        """Renders bold text."""
+        content = "".join(child.accept(self) for child in node.children)
+        return f"\\textbf{{{content}}}"
+    
+    def visit_italic(self, node: ast.ItalicNode) -> str:
+        """Renders italic text."""
+        content = "".join(child.accept(self) for child in node.children)
+        return f"\\textit{{{content}}}"
+
+    def visit_code(self, node: ast.CodeNode) -> str:
+        """Renders inline code."""
+        return f"\\texttt{{{node.text}}}"
+
+    def visit_link(self, node: ast.LinkNode) -> str:
+        """Renders a hyperlink. Requires the 'hyperref' package."""
+        content = "".join(child.accept(self) for child in node.children)
+        return f"\\href{{{node.url}}}{{{content}}}"

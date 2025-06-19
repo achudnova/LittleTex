@@ -1,6 +1,7 @@
 from .tokenizer import Token, TokenType
 from .ast import *
 from typing import List, Dict
+import re
 
 class Parser:
     # takes a list of tokens and transforms it into AST (document structure)
@@ -44,11 +45,37 @@ class Parser:
             return BlankLineNode()
         if token_type == TokenType.INDENTED_TEXT:
             return self._parse_indented_text()
-        # TODO: list parsing
         
         self._advance()
         return None
     
+    def _parse_inline_elements(self, text: str) -> List[Node]:
+        """parses a string for inline elements like bold, italic, links, etc."""
+        pattern = re.compile(r'\*{2}(.*?)\*{2}|\*(.*?)\*|`(.*?)`|\[(.*?)\]\((.*?)\)')
+        nodes = []
+        last_index = 0
+        
+        for match in pattern.finditer(text):
+            if match.start() > last_index:
+                nodes.append(TextNode(text[last_index:match.start()]))
+            
+            if match.group(1) is not None:  # Bold
+                nodes.append(BoldNode(self._parse_inline_elements(match.group(1))))
+            elif match.group(2) is not None:  # Italic
+                nodes.append(ItalicNode(self._parse_inline_elements(match.group(2))))
+            elif match.group(3) is not None:  # Inline code
+                nodes.append(CodeNode(match.group(3)))
+            elif match.group(4) is not None: # Link
+                link_text_nodes = self._parse_inline_elements(match.group(4))
+                nodes.append(LinkNode(url=match.group(5), children=link_text_nodes))
+    
+            last_index = match.end()
+        
+        if last_index < len(text):
+            nodes.append(TextNode(text[last_index:]))
+        
+        return nodes
+        
     def _parse_heading(self) -> HeadingNode:
         """parses a HEADING token into a HeadingNode"""
         token = self._peek()
@@ -59,7 +86,11 @@ class Parser:
         """parses a PARAGRAPH token into a ParagraphNode"""
         token = self._peek()
         self._advance()
-        return ParagraphNode(text=token.value)
+        
+        para_node = ParagraphNode()
+        para_node.children = self._parse_inline_elements(token.value)
+        
+        return para_node
 
     def _parse_horizontal_rule(self) -> HorizontalRuleNode:
         """parses a HORIZONTAL_RULE token into a HorizontalRuleNode"""
@@ -84,7 +115,7 @@ class Parser:
             # 3. If the item is at our current level process it
             if self._peek().indent == base_indent:
                 item_node = ListItemNode()
-                item_node.children.append(ParagraphNode(text=self._peek().value))
+                item_node.children.extend(self._parse_inline_elements(self._peek().value))
                 self._advance()
             
                 # 4. if the next token is a list item with more indentation, it's a nested list
@@ -98,6 +129,24 @@ class Parser:
         return list_node
 
 def extract_metadata(markdown_content: str) -> tuple[dict, str]:
+    """Extracts metadata from the top of the markdown file."""
     metadata: Dict[str, str] = {}
-    lines = markdown_content.split("\n")
-    return metadata, markdown_content
+    lines = markdown_content.split('\n')
+    
+    content_start_index = 0
+    for i, line in enumerate(lines):
+        stripped_line = line.strip()
+        if stripped_line.startswith('@'):
+            if ':' in stripped_line:
+                key, value = stripped_line[1:].split(':', 1)
+                metadata[key.strip()] = value.strip()
+            content_start_index = i + 1
+        elif not stripped_line:
+            # Allow blank lines between metadata lines
+            continue
+        else:
+            # First line of real content
+            break
+            
+    content_without_metadata = '\n'.join(lines[content_start_index:])
+    return metadata, content_without_metadata

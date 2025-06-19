@@ -19,8 +19,8 @@ class DocumentNode(Node):
 
 class ParagraphNode(Node):
     # represents a paragraph in the document
-    def __init__(self, text: str):
-        self.text = text  # text of the paragraph
+    def __init__(self):
+        self.children: List[Node] = []  # text of the paragraph
     
     def accept(self, visitor):
         return visitor.visit_paragraph(self)
@@ -68,3 +68,41 @@ class IndentedTextNode(Node):
     
     def accept(self, visitor):
         return visitor.visit_indented_text(self)
+
+class TextNode(Node):
+    # represents a plain text segment
+    def __init__(self, text: str):
+        self.text = text
+    def accept(self, visitor):
+        return visitor.visit_text(self) 
+ 
+    
+class BoldNode(Node):
+    # represents bold text
+    def __init__(self, children: List[Node]):
+        self.children = children
+    def accept(self, visitor):
+        return visitor.visit_bold(self)
+    
+class ItalicNode(Node):
+    """Represents italic text (*...*)."""
+    def __init__(self, children: List[Node]):
+        self.children = children
+    def accept(self, visitor):
+        return visitor.visit_italic(self)
+
+class CodeNode(Node):
+    """Represents inline code (`...`)."""
+    def __init__(self, text: str):
+        self.text = text
+    def accept(self, visitor):
+        return visitor.visit_code(self)
+
+class LinkNode(Node):
+    """Represents a hyperlink ([text](url))."""
+    def __init__(self, url: str, children: List[Node]):
+        self.url = url
+        self.children = children
+    def accept(self, visitor):
+        return visitor.visit_link(self)
+    
