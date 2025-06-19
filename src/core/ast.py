@@ -11,7 +11,7 @@ class Node(ABC):
 
 class DocumentNode(Node):
     # root node of the tree, represents the entire document
-    def __init(self):
+    def __init__(self):
         self.children: List[Node] = [] # empty list called children
         
     def accept(self, visitor):
