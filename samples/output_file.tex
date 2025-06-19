@@ -1,0 +1,85 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{parskip}
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    urlcolor=blue,
+}
+\title{Comprehensive Feature Test}
+\author{LittleTex Test Suite}
+\date{\today}
+\begin{document}
+\maketitle
+
+
+\section{Level 1 Heading: Document Features}
+
+
+This is a standard paragraph with some inline formatting. Here is some \textbf{bold text}, some \textit{italic text}, and some \texttt{inline code}.
+
+This is the second line of the same paragraph. The refactored parser should correctly join these lines together.
+
+This is a new paragraph, separated by a single blank line. It demonstrates a simple link to \href{https://code.visualstudio.com/}{the VS Code website}.
+
+This paragraph is separated by multiple blank lines.
+It also contains a link with \textbf{bolded text} inside: \href{https://github.com}{\textbf{GitHub}}.
+
+\vspace{0.3cm}
+\noindent\hrule
+\vspace{0.3cm}
+
+\subsection{Level 2 Heading: Lists and Nesting}
+
+
+This section tests various list types.
+
+\subsubsection{Level 3 Heading: Bulleted Lists}
+
+
+\begin{itemize}
+\item First item in a bulleted list.
+\item Second item, with \textit{italic} and \texttt{code}.
+\item A nested list follows:
+\begin{itemize}
+\item Nested item 1.
+\item Nested item 2, which is \textbf{important}.
+\begin{itemize}
+\item A deeper level of nesting.
+\end{itemize}
+
+\end{itemize}
+
+\item Back to the first level.
+\end{itemize}
+
+
+\subsubsection{Level 3 Heading: Numbered Lists}
+
+
+\begin{enumerate}
+\item First item in a numbered list.
+\item Second item.
+\item A nested numbered list:
+\begin{enumerate}
+\item Nested item A.
+\item Nested item B.
+\end{enumerate}
+
+\item Back to the main numbered list.
+\end{enumerate}
+
+
+\vspace{0.3cm}
+\noindent\hrule
+\vspace{0.3cm}
+
+\subsection{Level 2 Heading: Other Elements}
+
+
+This is an example of an indented text block, which should be offset from the left margin.
+
+\hspace*{2em}{This text is indented.}
+
+This is a final paragraph to ensure spacing is correct after all other elements.
+\end{document}
