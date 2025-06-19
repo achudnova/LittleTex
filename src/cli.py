@@ -5,7 +5,7 @@
 
 from typing import List
 import argparse # helps read command-line arguments
-from src.core.renderer import render_text_to_latex
+from src.core.renderer_copy import render_text_to_latex
 from src.core.parser_copy import parse_markdown_to_latex, extract_metadata
 from src.utils.pdf_generator import generate_pdf_from_latex
 
