@@ -48,7 +48,6 @@ class ListNode(Node):
     def accept(self, visitor):
         return visitor.visit_list(self)
     
-    
 class ListItemNode(Node):
     # represents a single item wihtin a list
     def __init__(self):
@@ -56,3 +55,16 @@ class ListItemNode(Node):
     
     def accept(self, visitor):
         return visitor.visit_list_item(self)
+
+class BlankLineNode(Node):
+    # represents a blank line
+    def accept(self, visitor):
+        return visitor.visit_blank_line(self)
+
+class IndentedTextNode(Node):
+    # >> syntax for indented text
+    def __init__(self, text: str):
+        self.text = text
+    
+    def accept(self, visitor):
+        return visitor.visit_indented_text(self)

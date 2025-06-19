@@ -12,6 +12,7 @@ class TokenType(Enum):
     BULLET_ITEM = auto()
     NUMBERED_ITEM = auto()
     HORIZONTAL_RULE = auto()
+    INDENTED_TEXT = auto()
     PARAGRAPH = auto()
     BLANK_LINE = auto()
     LINK = auto()
@@ -64,5 +65,8 @@ class Tokenizer:
         if numered_match:
             text = numered_match.group(1)
             return Token(TokenType.NUMBERED_ITEM, value=text, indent=indent)
+        
+        if stripped_line.startswith(">> "):
+            return Token(TokenType.INDENTED_TEXT, value=stripped_line[3:])
         
         return Token(TokenType.PARAGRAPH, value=line)
