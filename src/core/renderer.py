@@ -1,64 +1,90 @@
 from . import ast
 
 class LatexRenderer:
-    """implements visitor pattern, walks the AST and generates a list of LaTeX strings"""
-    
-    def render(self, document_node: ast.DocumentNode) -> str:
-        """takes a DocumentNode and returns a string containing the LaTeX code"""
-        lines = document_node.accept(self)
-        return "\n".join(lines)
-    
+    """
+    Implements the Visitor pattern. It walks the AST and generates a complete
+    LaTeX document string, including the preamble and metadata.
+    """
+    def render(self, document_node: ast.DocumentNode, metadata: dict) -> str:
+        """
+        The main public method. Takes the AST root and metadata, and returns
+        the complete, final LaTeX document as a single string.
+        """
+        preamble = self._generate_preamble(metadata)
+        
+        # This is the main visitor entry point, which generates the document body
+        body_lines = document_node.accept(self)
+        
+        # We join the body lines, preserving the blank lines from BlankLineNode
+        body = "\n".join(body_lines)
+        
+        postamble = "\n\\end{document}"
+        
+        return preamble + body + postamble
+
+    def _generate_preamble(self, metadata: dict) -> str:
+        """Generates the LaTeX preamble using the provided metadata."""
+        title = metadata.get('title', 'Untitled')
+        author = metadata.get('author', 'Unknown')
+        date = metadata.get('date', '\\today')
+        
+        preamble_lines = [
+            "\\documentclass{article}",
+            "\\usepackage[utf8]{inputenc}",
+            "\\usepackage{parskip}",
+            "\\usepackage{hyperref}",
+            "\\hypersetup{",
+            "    colorlinks=true,",
+            "    urlcolor=blue,",
+            "}",
+            f"\\title{{{title}}}",
+            f"\\author{{{author}}}",
+            f"\\date{{{date}}}",
+            "\\begin{document}",
+            "\\maketitle",
+            "" # Adds a blank line after the title block for spacing
+        ]
+        return "\n".join(preamble_lines) + "\n"
+
     def visit_document(self, node: ast.DocumentNode) -> list[str]:
-        """visits the root DocumentNode"""
+        """Visits the root DocumentNode and renders all its children."""
         rendered_lines = []
         for child in node.children:
             rendered_lines.extend(child.accept(self))
         return rendered_lines
-    
+
     def visit_heading(self, node: ast.HeadingNode) -> list[str]:
-        """visits a HeadingNode and returns LaTeX code for it"""
         if node.level == 1:
-            return [f"\\section{{{node.text}}}"]
+            return [f"\\section{{{node.text}}}", ""]
         elif node.level == 2:
-            return [f"\\subsection{{{node.text}}}"]
-        elif node.level == 3:
-            return [f"\\subsubsection{{{node.text}}}"]
-    
+            return [f"\\subsection{{{node.text}}}", ""]
+        else:
+            return [f"\\subsubsection{{{node.text}}}", ""]
+
     def visit_paragraph(self, node: ast.ParagraphNode) -> list[str]:
-        """translates a ParagraphNode into plain text with a newline"""
         content = "".join(child.accept(self) for child in node.children)
-        return [content, ""]
-    
+        return [content]
+
     def visit_horizontal_rule(self, node: ast.HorizontalRuleNode) -> list[str]:
-        """translates a HorizontalRuleNode into a LaTeX hrule"""
         return ["\\vspace{0.3cm}", "\\noindent\\hrule", "\\vspace{0.3cm}"]
 
     def visit_indented_text(self, node: ast.IndentedTextNode) -> list[str]:
-        """translates an IndentedTextNode"""
         return [f"\\hspace*{{2em}}{{{node.text}}}"]
-    
+
     def visit_blank_line(self, node: ast.BlankLineNode) -> list[str]:
-        """translates a BlankLineNode into an empty string"""
+        """This is the key: it preserves intentional blank lines."""
         return [""]
-    
+
     def visit_list(self, node: ast.ListNode) -> list[str]:
-        """visits a ListNode. This method is responsible for creating the 'begin' and 'end' environment for the list"""
-        # 1. get the correct name (itemize or enumerate) from the node's list_type
         env_name = node.list_type
-        
-        # 2. start the list with the begin command
         lines = [f"\\begin{{{env_name}}}"]
-        
-        # 3. visit each item in the list
         for item_node in node.items:
             lines.extend(item_node.accept(self))
-            
-        # 4. close the list with the end command
         lines.append(f"\\end{{{env_name}}}")
+        lines.append("") # Add a blank line after the list
         return lines
-    
+
     def visit_list_item(self, node: ast.ListItemNode) -> list[str]:
-        """visits a ListItemNode and renders the content inside a single list item"""
         inline_parts = []
         block_lines = []
         for child in node.children:
@@ -66,34 +92,25 @@ class LatexRenderer:
                 block_lines.extend(child.accept(self))
             else:
                 inline_parts.append(child.accept(self))
-        
         item_text = "".join(inline_parts)
-        
         final_lines = [f"\\item {item_text}"]
-        
         final_lines.extend(block_lines)
-               
         return final_lines
-    
+
     def visit_text(self, node: ast.TextNode) -> str:
-        """Renders plain text."""
         return node.text
-    
+
     def visit_bold(self, node: ast.BoldNode) -> str:
-        """Renders bold text."""
         content = "".join(child.accept(self) for child in node.children)
         return f"\\textbf{{{content}}}"
-    
+
     def visit_italic(self, node: ast.ItalicNode) -> str:
-        """Renders italic text."""
         content = "".join(child.accept(self) for child in node.children)
         return f"\\textit{{{content}}}"
 
     def visit_code(self, node: ast.CodeNode) -> str:
-        """Renders inline code."""
         return f"\\texttt{{{node.text}}}"
 
     def visit_link(self, node: ast.LinkNode) -> str:
-        """Renders a hyperlink. Requires the 'hyperref' package."""
         content = "".join(child.accept(self) for child in node.children)
         return f"\\href{{{node.url}}}{{{content}}}"

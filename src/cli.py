@@ -5,7 +5,7 @@ from src.core.tokenizer import Tokenizer
 from src.core.parser import Parser, extract_metadata
 from src.core.renderer import LatexRenderer
 
-from src.core.renderer_copy import render_text_to_latex
+# from src.core.renderer_copy import render_text_to_latex
 from src.utils.pdf_generator import generate_pdf_from_latex
 
 def main_cli() -> None:
@@ -47,19 +47,19 @@ def main_cli() -> None:
     
     # 6. Stage 3: Render the AST into a LaTeX string (document body)
     latex_renderer = LatexRenderer()
-    latex_body_content: str = latex_renderer.render(ast_document)
+    latex_document: str = latex_renderer.render(ast_document, metadata)
     
     # 7. Use the old renderer to warp the body with the document preamble
-    latex_document: str = render_text_to_latex(
-        content_lines=latex_body_content.splitlines(),
-        title=metadata.get('title', 'Unknown'),
-        author=metadata.get('author', 'Unknown'),
-        date=metadata.get('date', '\\today')
-    )
+    # latex_document: str = render_text_to_latex(
+    #     content_lines=latex_body_content.splitlines(),
+    #     title=metadata.get('title', 'Unknown'),
+    #     author=metadata.get('author', 'Unknown'),
+    #     date=metadata.get('date', '\\today')
+    # )
     
     # 8. Write the LaTeX string to the output file
     try:
-        with open(output_file, 'w', encoding='utf-8') as f_out:
+        with open(args.output_file, 'w', encoding='utf-8') as f_out:
             f_out.write(latex_document)
             print(f"LaTeX document written to {args.output_file}")
     except IOError as e:

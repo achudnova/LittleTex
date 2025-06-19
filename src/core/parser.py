@@ -84,11 +84,18 @@ class Parser:
     
     def _parse_paragraph(self) -> ParagraphNode:
         """parses a PARAGRAPH token into a ParagraphNode"""
-        token = self._peek()
-        self._advance()
         
         para_node = ParagraphNode()
-        para_node.children = self._parse_inline_elements(token.value)
+        token = self._peek()
+        para_node.children = self._parse_inline_elements(token.value.strip())
+        self._advance()
+        
+        while self._peek().type == TokenType.PARAGRAPH:
+            para_node.children.append(TextNode("\n"))
+            
+            token = self._peek()
+            para_node.children.extend(self._parse_inline_elements(token.value.strip()))
+            self._advance()
         
         return para_node
 
