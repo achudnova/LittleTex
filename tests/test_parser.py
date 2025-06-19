@@ -1,6 +1,6 @@
 import pytest
 from typing import List
-from src.core.parser import parse_markdown_to_latex
+from src.core.parser_copy import parse_markdown_to_latex
 
 def test_h1_heading():
     markdown_input: str = "# Heading 1"
