@@ -14,9 +14,9 @@ It should support:
 - paragraphs (plain text lines)
 - basic LaTeX document structure (e.g \documentclass, \begin{document})
 
-Run: `littletex examples/test_input.md output/test_output.tex` or `littletex examples/test_input.md output/test_output.tex --pdf`
+Run: `littletex samples/input_file.md samples/output_file.tex --pdf` or `littletex samples/input_file.md samples/output_file.tex`
 
-Optional: `python main.py input.md output.tex` // `python main.py input.tex output.pdf`
+Optional: `python src/main.py samples/input_file.md samples/output_file.tex --pdf` // `python src/main.py samples/input_file.md samples/output_file.tex`
 
 ## Abbreviation:
 
