@@ -16,16 +16,37 @@ def parse_markdown_to_latex(markdown_content: str) -> List[str]:
     latex_output_lines: List[str] = []
     previous_line_was_blank: bool = False
     in_bullet_list: bool = False
+    in_numbered_list: bool = False
     
     for line in markdown_lines:
         stripped_line: str = line.strip() # Remove leading/trailing whitespace for checking
         
         if stripped_line.startswith("- "):
             if not in_bullet_list:
+                # close numbered list if open
+                if in_numbered_list:
+                    latex_output_lines.append("\\end{enumerate}")
+                    in_numbered_list = False
+                    
+                # start bullet list
                 latex_output_lines.append("\\begin{itemize}")
                 in_bullet_list = True
             
             item_content = format_inline_elements(stripped_line[2:])  # Get text after "- "
+            latex_output_lines.append(f"\\item {item_content}")
+            previous_line_was_blank = False
+            continue
+        
+        numbered_list_match = re.match(r'^\d+\.\s+(.*)', stripped_line)
+        if numbered_list_match:
+            if not in_numbered_list:
+                if in_bullet_list:
+                    latex_output_lines.append("\\end{itemize}")
+                    in_bullet_list = False
+                latex_output_lines.append("\\begin{enumerate}")
+                in_numbered_list = True
+            
+            item_content = format_inline_elements(numbered_list_match.group(1))
             latex_output_lines.append(f"\\item {item_content}")
             previous_line_was_blank = False
             continue
@@ -35,6 +56,11 @@ def parse_markdown_to_latex(markdown_content: str) -> List[str]:
             latex_output_lines.append("\\end{itemize}")
             in_bullet_list = False
         
+        if in_numbered_list and not re.match(r'^\d+\.\s+', stripped_line):
+            # End of numbered list if the next line is not a numbered point
+            latex_output_lines.append("\\end{enumerate}")
+            in_numbered_list = False
+        
         if stripped_line == "---":
             # Horizontal rule
             latex_output_lines.append("\\vspace{0.3cm}")
@@ -43,7 +69,7 @@ def parse_markdown_to_latex(markdown_content: str) -> List[str]:
             previous_line_was_blank = False
             continue
         
-        if stripped_line.startswith("# "):
+        elif stripped_line.startswith("# "):
             # Level 1 heading (section)
             heading_text: str = stripped_line[2:] # get text after ## 
             latex_output_lines.append(f"\\section{{{heading_text}}}")
