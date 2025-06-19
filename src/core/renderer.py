@@ -37,7 +37,7 @@ class LatexRenderer:
             "    colorlinks=true,",
             "    urlcolor=blue,",
             "}",
-            f"\\title{{{title}}}",
+            f"\\title{{\\textbf{{{title}}}}}",
             f"\\author{{{author}}}",
             f"\\date{{{date}}}",
             "\\begin{document}",
