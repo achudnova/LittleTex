@@ -2,8 +2,9 @@ import argparse
 from typing import List
 
 from src.core.tokenizer import Tokenizer
-from src.core.parser import Parser, extract_metadata
+from src.core.parser import Parser
 from src.core.renderer import LatexRenderer
+from src.utils.text_processing import extract_metadata
 
 # from src.core.renderer_copy import render_text_to_latex
 from src.utils.pdf_generator import generate_pdf_from_latex
