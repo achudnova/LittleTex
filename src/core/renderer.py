@@ -1,33 +1,35 @@
 from . import ast
 
+
 class LatexRenderer:
     """
     Implements the Visitor pattern. It walks the AST and generates a complete
     LaTeX document string, including the preamble and metadata.
     """
+
     def render(self, document_node: ast.DocumentNode, metadata: dict) -> str:
         """
         The main public method. Takes the AST root and metadata, and returns
         the complete, final LaTeX document as a single string.
         """
         preamble = self._generate_preamble(metadata)
-        
+
         # This is the main visitor entry point, which generates the document body
         body_lines = document_node.accept(self)
-        
+
         # We join the body lines, preserving the blank lines from BlankLineNode
         body = "\n".join(body_lines)
-        
+
         postamble = "\n\\end{document}"
-        
+
         return preamble + body + postamble
 
     def _generate_preamble(self, metadata: dict) -> str:
         """Generates the LaTeX preamble using the provided metadata."""
-        title = metadata.get('title', 'Untitled')
-        author = metadata.get('author', 'Unknown')
-        date = metadata.get('date', '\\today')
-        
+        title = metadata.get("title", "Untitled")
+        author = metadata.get("author", "Unknown")
+        date = metadata.get("date", "\\today")
+
         preamble_lines = [
             "\\documentclass{article}",
             "\\usepackage[utf8]{inputenc}",
@@ -42,7 +44,7 @@ class LatexRenderer:
             f"\\date{{{date}}}",
             "\\begin{document}",
             "\\maketitle",
-            "" # Adds a blank line after the title block for spacing
+            "",  # Adds a blank line after the title block for spacing
         ]
         return "\n".join(preamble_lines) + "\n"
 
@@ -81,7 +83,7 @@ class LatexRenderer:
         for item_node in node.items:
             lines.extend(item_node.accept(self))
         lines.append(f"\\end{{{env_name}}}")
-        lines.append("") # Add a blank line after the list
+        lines.append("")  # Add a blank line after the list
         return lines
 
     def visit_list_item(self, node: ast.ListItemNode) -> list[str]:
