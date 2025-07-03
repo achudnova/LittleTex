@@ -9,7 +9,7 @@ def generate_pdf_from_latex(tex_file: str) -> Tuple[bool, Optional[str]]:
         tex_file (str): path to the .tex file
 
     Returns:
-        Tuple[bool, Optional[str]]: (success, error_message)
+        Tuple[bool, Optional[str]]: (success, pdf_path_or_error_message)
     """
     
     if not os.path.exists(tex_file):
@@ -51,7 +51,7 @@ def generate_pdf_from_latex(tex_file: str) -> Tuple[bool, Optional[str]]:
                     print(f"Warning: Could not delete auxiliary file {aux_file}. It may be in use.")
         
         if result.returncode == 0 and os.path.exists(pdf_path):
-            print(f"PDF successfully generated: {pdf_path}")
+            print(f"> PDF successfully generated: {pdf_path}")
             return True, None
         else:
             error_msg = result.stderr if result.stderr else "Unknown error (check if pdflatex ran correctly)"
