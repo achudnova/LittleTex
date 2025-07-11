@@ -1,7 +1,7 @@
 from typing import Optional
 from pathlib import Path
-from src.config.pipeline_config import PipelineConfig
-from src.core.pipeline_builder import PipelineBuilder
+from src.pipeline.config import PipelineConfig
+from src.pipeline.builder import PipelineBuilder
 
 
 class LittleTexApp:

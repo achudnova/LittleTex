@@ -1,21 +1,13 @@
-from abc import ABC, abstractmethod
 from pathlib import Path
-from typing import Any, Dict, Tuple, List
+from typing import Any, Dict, List, Tuple
 
+from .core import Stage
 from src.core.ast import DocumentNode
-from src.utils.text_processing import extract_metadata
 from src.core.tokenizer import Tokenizer, Token
 from src.core.parser import Parser
 from src.core.renderer import LatexRenderer
+from src.utils.text_processing import extract_metadata
 from src.utils.pdf_generator import generate_pdf_from_latex
-
-
-class Stage(ABC):
-    """A processing stage takes an input, does work, and returns an output for the next stage."""
-
-    @abstractmethod
-    def run(self, data: Any) -> Any:
-        pass
 
 
 class ReadFileStage(Stage):
@@ -91,15 +83,3 @@ class PdfStage(Stage):
         else:
             pdf_path = tex_path.with_suffix('.pdf')
             return pdf_path
-
-
-class Pipeline:
-    def __init__(self, stages: List[Stage]):
-        self.stages = stages
-    
-    def execute(self, initial_input: Any = None) -> Any:
-        """Run the pipeline through all stages."""
-        result = initial_input
-        for stage in self.stages:
-            result = stage.run(result)
-        return result

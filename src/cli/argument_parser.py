@@ -1,6 +1,6 @@
 import argparse
 from pathlib import Path
-from src.config.pipeline_config import PipelineConfig
+from src.pipeline.config import PipelineConfig
 
 
 class ArgumentParser:
