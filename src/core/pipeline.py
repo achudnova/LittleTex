@@ -2,9 +2,9 @@ from abc import ABC, abstractmethod
 from pathlib import Path
 from typing import Any, Dict, Tuple, List
 
-from src.core.ast import Node as AST
+from src.core.ast import DocumentNode
 from src.utils.text_processing import extract_metadata
-from src.core.tokenizer import Tokenizer
+from src.core.tokenizer import Tokenizer, Token
 from src.core.parser import Parser
 from src.core.renderer import LatexRenderer
 from src.utils.pdf_generator import generate_pdf_from_latex
@@ -34,7 +34,7 @@ class MetadataStage(Stage):
 
 
 class TokenizeStage(Stage):
-    def run(self, data: Tuple[Dict[str, str], str]) -> Tuple[Dict[str, str], List]:
+    def run(self, data: Tuple[Dict[str, str], str]) -> Tuple[Dict[str, str], List[Token]]:
         """Tokenize the markdown into a list of tokens."""
         metadata, markdown = data
         tokenizer = Tokenizer()
@@ -43,7 +43,7 @@ class TokenizeStage(Stage):
 
 
 class ParseStage(Stage):
-    def run(self, data: Tuple[Dict[str, str], List]) -> Tuple[Dict[str, str], AST]:
+    def run(self, data: Tuple[Dict[str, str], List[Token]]) -> Tuple[Dict[str, str], DocumentNode]:
         """Parse tokens into an AST."""
         metadata, tokens = data
         parser = Parser(tokens)
@@ -55,7 +55,7 @@ class RenderStage(Stage):
     def __init__(self):
         self.renderer = LatexRenderer()
     
-    def run(self, data: Tuple[Dict[str, str], AST]) -> Tuple[Dict[str, str], str]:
+    def run(self, data: Tuple[Dict[str, str], DocumentNode]) -> Tuple[Dict[str, str], str]:
         """Render the AST and metadata to a LaTeX string."""
         metadata, ast = data
         latex_document = self.renderer.render(ast, metadata)
