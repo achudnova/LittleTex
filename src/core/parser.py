@@ -14,6 +14,7 @@ from .ast import (
     ItalicNode,
     CodeNode,
     LinkNode,
+    ImageNode,
 )
 from typing import List
 import re
@@ -61,6 +62,9 @@ class Parser:
             return BlankLineNode()
         if token_type == TokenType.INDENTED_TEXT:
             return self._parse_indented_text()
+        if token_type == TokenType.IMAGE:
+            return self._parse_image()
+            
 
         self._advance()
         return None
@@ -91,6 +95,15 @@ class Parser:
             nodes.append(TextNode(text[last_index:]))
 
         return nodes
+    
+    def _parse_image(self) -> ImageNode:
+        """Parses an IMAGE token into an ImageNode."""
+        token = self._peek()
+        # The value is the dictionary we created in the tokenizer
+        alt_text = token.value["alt"]
+        url = token.value["url"]
+        self._advance()
+        return ImageNode(alt_text=alt_text, url=url)
 
     def _parse_heading(self) -> HeadingNode:
         """parses a HEADING token into a HeadingNode"""

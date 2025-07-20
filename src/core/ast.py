@@ -136,3 +136,15 @@ class LinkNode(Node):
 
     def accept(self, visitor):
         return visitor.visit_link(self)
+
+
+class ImageNode(Node):
+    """Represents an image (![alt text](url))."""
+
+    def __init__(self, alt_text: str, url: str):
+        self.alt_text = alt_text
+        self.url = url
+
+    def accept(self, visitor):
+        return visitor.visit_image(self)
+    

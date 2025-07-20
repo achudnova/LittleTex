@@ -17,6 +17,7 @@ class TokenType(Enum):
     PARAGRAPH = auto()
     BLANK_LINE = auto()
     LINK = auto()
+    IMAGE = auto()
     EOF = auto()  # End of file token (signifies end of input)
 
 
@@ -51,6 +52,7 @@ class Tokenizer:
         (TokenType.NUMBERED_ITEM, re.compile(r"^\d+\.\s+(.*)")),
         (TokenType.HORIZONTAL_RULE, re.compile(r"^---$")),
         (TokenType.INDENTED_TEXT, re.compile(r"^>>\s(.*)")),
+        (TokenType.IMAGE, re.compile(r"^!\[(.*?)\]\((.*?)\)$")),
     ]
 
     # scan the raw md text & convert it into a list of Token objects
@@ -97,4 +99,8 @@ class Tokenizer:
         if token_type == TokenType.HORIZONTAL_RULE:
             return Token(token_type)
 
-        raise ValueError(f"Unknown token type: {token_type}")
+        if token_type == TokenType.IMAGE:
+            alt_text = match.group(1)
+            url = match.group(2)
+            return Token(token_type, value={"alt": alt_text, "url": url})
+        

@@ -10,6 +10,7 @@ from .stages import (
     RenderStage,
     WriteFileStage,
     PdfStage,
+    CopyAssetsStage,
 )
 
 
@@ -22,11 +23,14 @@ class PipelineBuilder:
     
     def add_core_stages(self) -> "PipelineBuilder":
         """Add the core processing stages"""
+        input_dir = self.config.input_path.parent
+        
         self.stages.extend([
             ReadFileStage(self.config.input_path),
             MetadataStage(),
             TokenizeStage(),
             ParseStage(),
+            CopyAssetsStage(input_dir, self.config.output_dir),
             RenderStage(),
             WriteFileStage(self.config.output_dir),
         ])

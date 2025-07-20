@@ -1,8 +1,9 @@
+import shutil
 from pathlib import Path
 from typing import Any, Dict, List, Tuple
 
 from .core import Stage
-from src.core.ast import DocumentNode
+from src.core.ast import DocumentNode, ImageNode
 from src.core.tokenizer import Tokenizer, Token
 from src.core.parser import Parser
 from src.core.renderer import LatexRenderer
@@ -78,8 +79,41 @@ class PdfStage(Stage):
         success, pdf_path_or_error = generate_pdf_from_latex(tex_path)
         if not success:
             raise RuntimeError(f"Failed to generate PDF: {pdf_path_or_error}")
-        if isinstance(pdf_path_or_error, (str, Path)):
-            return Path(pdf_path_or_error)
-        else:
-            pdf_path = tex_path.with_suffix('.pdf')
-            return pdf_path
+        
+        # pdf_path_or_error is now the actual path when success is True
+        pdf_path = Path(pdf_path_or_error) if pdf_path_or_error else tex_path.with_suffix('.pdf')
+        return pdf_path
+        
+
+class CopyAssetsStage(Stage):
+    def __init__(self, input_dir: Path, output_dir: Path):
+        self.input_dir = input_dir
+        self.output_dir = output_dir
+
+    def run(self, data: Tuple[Dict[str, str], DocumentNode]) -> Tuple[Dict[str, str], DocumentNode]:
+        """
+        Scans the AST for image nodes and copies the image files to the output directory.
+        """
+        metadata, ast_root = data
+        self._find_and_copy_images(ast_root)
+        # Pass the data through to the next stage unmodified.
+        return metadata, ast_root
+
+    def _find_and_copy_images(self, node: Any):
+        """Recursively traverses the AST to find and copy images."""
+        if isinstance(node, DocumentNode):
+            for child in node.children:
+                self._find_and_copy_images(child)
+        elif hasattr(node, "children"):
+            for child in node.children:
+                self._find_and_copy_images(child)
+        elif isinstance(node, ImageNode):
+            # We have an image. Construct the source path and copy it.
+            source_path = self.input_dir / node.url
+            dest_path = self.output_dir / Path(node.url).name
+
+            if source_path.is_file():
+                print(f"> Copying asset: {source_path} to {dest_path}")
+                shutil.copy(source_path, dest_path)
+            else:
+                print(f"Warning: Image file not found at {source_path}")

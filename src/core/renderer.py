@@ -1,3 +1,4 @@
+from pathlib import Path
 from . import ast
 
 
@@ -35,6 +36,7 @@ class LatexRenderer:
             "\\documentclass{article}",
             "\\usepackage[utf8]{inputenc}",
             "\\usepackage{parskip}",
+            "\\usepackage{graphicx}",
         ]
         
         if geometry:
@@ -125,3 +127,15 @@ class LatexRenderer:
     def visit_link(self, node: ast.LinkNode) -> str:
         content = "".join(child.accept(self) for child in node.children)
         return f"\\href{{{node.url}}}{{{content}}}"
+
+    def visit_image(self, node: ast.ImageNode) -> list[str]:
+        image_filename = Path(node.url).name
+        lines = [
+            "\\begin{figure}[h!]",
+            "    \\centering",
+            f"    \\includegraphics[width=0.8\\textwidth]{{{image_filename}}}",
+            f"    \\caption{{{node.alt_text}}}",
+            "\\end{figure}",
+            "", # Add a blank line for spacing
+        ]
+        return lines
