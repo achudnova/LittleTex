@@ -65,7 +65,7 @@ class WriteFileStage(Stage):
         title = metadata.get("title", "output")
         tex_path = self.output_dir / f"{title}.tex"
         tex_path.write_text(tex_content, encoding="utf-8")
-        print(f"> LaTeX document written to {tex_path}")
+        print(f"📝 LaTeX document written to {tex_path}")
         return tex_path
 
 

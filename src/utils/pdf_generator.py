@@ -27,7 +27,7 @@ def generate_pdf_from_latex(tex_file: str) -> Tuple[bool, Optional[str]]:
         if check_cmd.returncode != 0:
             return False, "Error: pdflatex is not installed or not found in PATH."
         
-        print(f"Generating PDF from {tex_file}...")
+        print(f"⚙️  Generating PDF from {tex_file}...")
         
         result = subprocess.run(
             ["pdflatex", "-interaction=nonstopmode", base_name],
@@ -51,7 +51,7 @@ def generate_pdf_from_latex(tex_file: str) -> Tuple[bool, Optional[str]]:
                     print(f"Warning: Could not delete auxiliary file {aux_file}. It may be in use.")
         
         if result.returncode == 0 and os.path.exists(pdf_path):
-            print(f"> PDF successfully generated: {pdf_path}")
+            print(f"✅ PDF successfully generated: {pdf_path}")
             return True, None
         else:
             error_msg = result.stderr if result.stderr else "Unknown error (check if pdflatex ran correctly)"

@@ -29,23 +29,32 @@ class LatexRenderer:
         title = metadata.get("title", "Untitled")
         author = metadata.get("author", "Unknown")
         date = metadata.get("date", "\\today")
-
+        geometry = metadata.get("geometry")
+        
         preamble_lines = [
             "\\documentclass{article}",
             "\\usepackage[utf8]{inputenc}",
             "\\usepackage{parskip}",
+        ]
+        
+        if geometry:
+            preamble_lines.append(f"\\usepackage[{geometry}]{{geometry}}")
+
+            
+        preamble_lines.extend([
             "\\usepackage{hyperref}",
             "\\hypersetup{",
             "    colorlinks=true,",
             "    urlcolor=blue,",
             "}",
+            # "\\usepackage[left=2cm,right=5cm,top=2cm,bottom=2cm]{geometry}", TODO
             f"\\title{{\\textbf{{{title}}}}}",
             f"\\author{{{author}}}",
             f"\\date{{{date}}}",
             "\\begin{document}",
             "\\maketitle",
             "",  # Adds a blank line after the title block for spacing
-        ]
+        ])
         return "\n".join(preamble_lines) + "\n"
 
     def visit_document(self, node: ast.DocumentNode) -> list[str]:

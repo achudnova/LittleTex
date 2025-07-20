@@ -24,11 +24,11 @@ class LittleTexApp:
     
     def _print_success_message(self, result: Optional[Path]) -> None:
         """Print success message based on execution result."""
-        print(f"Successfully processed {self.config.input_path}")
+        print(f"✅ Successfully processed {self.config.input_path}")
         if self.config.generate_pdf and result:
-            print(f"Final output written to {result}")
+            print(f"📤 Final PDF output written to {result}")
     
     def _handle_error(self, error: Exception) -> None:
         """Handle execution errors."""
-        print(f"Error: {error}")
+        print(f"🚨 Error: {error}")
         exit(1)
