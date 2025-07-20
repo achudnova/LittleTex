@@ -37,6 +37,7 @@ class LatexRenderer:
             "\\usepackage[utf8]{inputenc}",
             "\\usepackage{parskip}",
             "\\usepackage{graphicx}",
+            "\\renewcommand{\\figurename}{Image}", # TODO
         ]
         
         if geometry:
@@ -49,7 +50,6 @@ class LatexRenderer:
             "    colorlinks=true,",
             "    urlcolor=blue,",
             "}",
-            # "\\usepackage[left=2cm,right=5cm,top=2cm,bottom=2cm]{geometry}", TODO
             f"\\title{{\\textbf{{{title}}}}}",
             f"\\author{{{author}}}",
             f"\\date{{{date}}}",
