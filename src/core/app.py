@@ -19,8 +19,10 @@ class LittleTexApp:
         try:
             result = pipeline.execute()
             self._print_success_message(result)
+            return result
         except Exception as e:
             self._handle_error(e)
+            return None
     
     def _print_success_message(self, result: Optional[Path]) -> None:
         """Print success message based on execution result."""

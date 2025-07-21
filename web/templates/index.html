@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LittleTex - Markdown to LaTeX/PDF Converter</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .container {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            max-width: 500px;
+            width: 90%;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 0.5rem;
+            font-size: 2rem;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 2rem;
+            font-size: 0.9rem;
+        }
+        
+        .upload-area {
+            border: 2px dashed #ddd;
+            border-radius: 8px;
+            padding: 2rem;
+            text-align: center;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .upload-area:hover {
+            border-color: #667eea;
+            background-color: #f8f9ff;
+        }
+        
+        .upload-area.dragover {
+            border-color: #667eea;
+            background-color: #f0f4ff;
+        }
+        
+        input[type="file"] {
+            display: none;
+        }
+        
+        .upload-icon {
+            font-size: 3rem;
+            color: #ddd;
+            margin-bottom: 1rem;
+        }
+        
+        .upload-text {
+            color: #666;
+            margin-bottom: 0.5rem;
+        }
+        
+        .file-info {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 6px;
+            margin-bottom: 1rem;
+            display: none;
+        }
+        
+        .convert-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+        
+        .convert-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .convert-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .flash-messages {
+            margin-bottom: 1rem;
+        }
+        
+        .flash-message {
+            padding: 0.75rem;
+            border-radius: 4px;
+            margin-bottom: 0.5rem;
+        }
+        
+        .flash-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .features {
+            margin-top: 2rem;
+            font-size: 0.85rem;
+            color: #666;
+        }
+        
+        .features ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .features li {
+            padding: 0.25rem 0;
+        }
+        
+        .features li:before {
+            content: "✓ ";
+            color: #28a745;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔄 LittleTex</h1>
+        <p class="subtitle">Convert Markdown to LaTeX & PDF</p>
+        
+        <div class="flash-messages">
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="flash-message flash-error">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+        </div>
+        
+        <form method="POST" action="/convert" enctype="multipart/form-data" id="uploadForm">
+            <div class="upload-area" onclick="document.getElementById('file').click()">
+                <div class="upload-icon">📄</div>
+                <div class="upload-text">Click to select or drag & drop your Markdown file</div>
+                <small>Supports: .md, .markdown, .txt (max 16MB)</small>
+                <input type="file" id="file" name="file" accept=".md,.markdown,.txt">
+            </div>
+            
+            <div class="file-info" id="fileInfo">
+                <strong>Selected file:</strong> <span id="fileName"></span>
+            </div>
+            
+            <button type="submit" class="convert-btn" id="convertBtn" disabled>
+                Convert to LaTeX & PDF
+            </button>
+        </form>
+        
+        <div class="features">
+            <h3>Features:</h3>
+            <ul>
+                <li>Headers, paragraphs, and text formatting</li>
+                <li>Bulleted and numbered lists</li>
+                <li>Links and inline code</li>
+                <li>Images (with automatic copying)</li>
+                <li>Custom metadata (@title, @author, etc.)</li>
+                <li>Generates both .tex and .pdf files</li>
+            </ul>
+        </div>
+    </div>
+    
+    <script>
+        const fileInput = document.getElementById('file');
+        const uploadArea = document.querySelector('.upload-area');
+        const convertBtn = document.getElementById('convertBtn');
+        const fileInfo = document.getElementById('fileInfo');
+        const fileName = document.getElementById('fileName');
+        
+        fileInput.addEventListener('change', function(e) {
+            if (e.target.files.length > 0) {
+                const file = e.target.files[0];
+                fileName.textContent = file.name;
+                fileInfo.style.display = 'block';
+                convertBtn.disabled = false;
+            }
+        });
+        
+        // Drag and drop functionality
+        uploadArea.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+        
+        uploadArea.addEventListener('dragleave', function(e) {
+            uploadArea.classList.remove('dragover');
+        });
+        
+        uploadArea.addEventListener('drop', function(e) {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                fileInput.files = files;
+                const file = files[0];
+                fileName.textContent = file.name;
+                fileInfo.style.display = 'block';
+                convertBtn.disabled = false;
+            }
+        });
+        
+        // Form submission with loading state
+        document.getElementById('uploadForm').addEventListener('submit', function() {
+            convertBtn.textContent = 'Converting...';
+            convertBtn.disabled = true;
+        });
+    </script>
+</body>
+</html>
