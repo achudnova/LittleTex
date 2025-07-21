@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LittleTex - Markdown to LaTeX/PDF Converter</title>
+    <link rel="icon" href="{{ url_for('static', filename='favicon.png') }}">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
@@ -23,17 +24,21 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.2);
             max-width: 500px;
             width: 90%;
+            text-align: center;
         }
         
         h1 {
-            text-align: center;
             color: #333;
             margin-bottom: 0.5rem;
             font-size: 2rem;
         }
         
+        .main-icon {
+            height: 80px;
+            margin-bottom: 0.5rem;
+        }
+        
         .subtitle {
-            text-align: center;
             color: #666;
             margin-bottom: 2rem;
             font-size: 0.9rem;
@@ -126,9 +131,15 @@
             color: #666;
         }
         
+        .features h3 {
+            margin-bottom: 0.5rem;
+        }
+        
         .features ul {
             list-style: none;
             padding-left: 0;
+            display: inline-block;
+            text-align: left;
         }
         
         .features li {
@@ -144,14 +155,15 @@
 </head>
 <body>
     <div class="container">
-        <h1>🔄 LittleTex</h1>
+        <img src="{{ url_for('static', filename='favicon.png') }}" alt="LittleTex Logo" class="main-icon">
+        <h1>LittleTex</h1>
         <p class="subtitle">Convert Markdown to LaTeX & PDF</p>
         
         <div class="flash-messages">
-            {% with messages = get_flashed_messages() %}
+            {% with messages = get_flashed_messages(with_categories=true) %}
                 {% if messages %}
-                    {% for message in messages %}
-                        <div class="flash-message flash-error">{{ message }}</div>
+                    {% for category, message in messages %}
+                        <div class="flash-message flash-{{ category }}">{{ message }}</div>
                     {% endfor %}
                 {% endif %}
             {% endwith %}
@@ -161,7 +173,7 @@
             <div class="upload-area" onclick="document.getElementById('file').click()">
                 <div class="upload-icon">📄</div>
                 <div class="upload-text">Click to select or drag & drop your Markdown file</div>
-                <small>Supports: .md, .markdown, .txt (max 16MB)</small>
+                <small>Supports: .md, .markdown (max 16MB)</small>
                 <input type="file" id="file" name="file" accept=".md,.markdown,.txt">
             </div>
             
@@ -173,6 +185,18 @@
                 Convert to LaTeX & PDF
             </button>
         </form>
+        
+        <div class="features">
+            <h3>Features:</h3>
+            <ul>
+                <li>Headers, paragraphs, and text formatting</li>
+                <li>Bulleted and numbered lists</li>
+                <li>Links and inline code</li>
+                <li>Images (with automatic copying)</li>
+                <li>Custom metadata (@title, @author, etc.)</li>
+                <li>Generates both .tex and .pdf files</li>
+            </ul>
+        </div>
     </div>
     
     <script>
