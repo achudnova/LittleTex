@@ -130,23 +130,23 @@ class LatexRenderer:
     def visit_image(self, node: ast.ImageNode) -> list[str]:
         image_filename = Path(node.url).name
         
-        alt_text = node.alt_text
-        figure_type = "Image" #default
-        caption = alt_text
+        # alt_text = node.alt_text
+        # figure_type = "Image" #default
+        # caption = alt_text
         
-        if ":" in alt_text:
-            parts = alt_text.split(":", 1)
-            potential_type = parts[0].strip()
-            if potential_type:
-                figure_type = potential_type
-                caption = parts[1].strip()
+        # if ":" in alt_text:
+        #     parts = alt_text.split(":", 1)
+        #     potential_type = parts[0].strip()
+        #     if potential_type:
+        #         figure_type = potential_type
+        #         caption = parts[1].strip()
         
         lines = [
-            f"\\renewcommand{{\\figurename}}{{{figure_type}}}",
+            f"\\renewcommand{{\\figurename}}{{{node.figure_type}}}",
             "\\begin{figure}[h!]",
             "    \\centering",
             f"    \\includegraphics[width=0.8\\textwidth]{{{image_filename}}}",
-            f"    \\caption{{{caption}}}",
+            f"    \\caption{{{node.caption}}}",
             "\\end{figure}",
             "", # Add a blank line for spacing
         ]

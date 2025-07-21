@@ -102,8 +102,19 @@ class Parser:
         # The value is the dictionary we created in the tokenizer
         alt_text = token.value["alt"]
         url = token.value["url"]
+        figure_type = "Image"  # default
+        caption = alt_text  # default caption is the alt text
+        
+        if ":" in alt_text:
+            parts = alt_text.split(":", 1)
+            potential_type = parts[0].strip()
+            if potential_type:
+                figure_type = potential_type
+                caption = parts[1].strip()
+        
+        
         self._advance()
-        return ImageNode(alt_text=alt_text, url=url)
+        return ImageNode(alt_text=alt_text, url=url, caption=caption, figure_type=figure_type)
 
     def _parse_heading(self) -> HeadingNode:
         """parses a HEADING token into a HeadingNode"""
