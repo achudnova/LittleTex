@@ -23,7 +23,7 @@ app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'd08fb1b3ebd309b2563c17000923
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # Set max upload size to 16MB
 
 # Define the allowed file extensions
-ALLOWED_EXTENSIONS = {'zip'}
+ALLOWED_EXTENSIONS = {'md', 'zip'}
 
 def allowed_file(filename):
     """Check if the uploaded file has an allowed extension."""
@@ -42,11 +42,11 @@ def convert_file():
     # 1. Validate the file upload
     file = request.files.get('file')
     if not file or file.filename == '':
-        flash('No file selected. Please choose a project .zip file.')
+        flash('No file selected. Please choose a file to convert.')
         return redirect(url_for('index'))
 
     if not allowed_file(file.filename):
-        flash('Invalid file type. Please upload a .zip file.')
+        flash('Invalid file type. Please upload a .md or .zip file.')
         return redirect(url_for('index'))
 
     # 2. Create a unique temporary directory for this conversion
@@ -54,25 +54,35 @@ def convert_file():
     session_dir = Path(tempfile.gettempdir()) / "littletex_web" / session_id
     session_dir.mkdir(parents=True, exist_ok=True)
     
-    input_filename = secure_filename(file.filename)
-    input_path = session_dir / input_filename
-    file.save(input_path)
+    # input_filename = secure_filename(file.filename)
+    # input_path = session_dir / input_filename
+    # file.save(input_path)
+    
+    input_path = None
     
     try:
-        with zipfile.ZipFile(input_path, 'r') as zip_ref:
-            zip_ref.extractall(session_dir)
+        filename = secure_filename(file.filename)
         
-        md_files = list(session_dir.glob('**/*.md')) + list(session_dir.glob('**/*.markdown'))
-        if not md_files:
-            flash('No Markdown files found in the uploaded ZIP archive.')
-        if len(md_files) > 1:
-            flash(f"Warning: Multiple Markdown files found. Using the first one: {md_files[0].name}")
-        
-        input_path = md_files[0]
-        
-    except (zipfile.BadZipFile, ValueError) as e:
-        flash(f'Error processing archive: {e}')
+        # handle .zip files
+        if filename.lower().endswith('.zip'):
+            zip_path = session_dir / filename
+            file.save(zip_path)
+            
+            with zipfile.ZipFile(zip_path, 'r') as zip_ref:
+                zip_ref.extractall(session_dir)
+            
+            md_files = list(session_dir.glob('**/*.md')) + list(session_dir.glob('**/*.markdown'))
+            if not md_files:
+                raise ValueError("No .md or .markdown file found inside the .zip archive.")
+            
+            input_path = md_files[0]
+        else:
+            input_path = session_dir / filename
+            file.save(input_path)
+    except Exception as e:
+        flash(f"Error processing uploaded file: {e}")
         return redirect(url_for('index'))
+
 
     # Store the original filename stem in the user's session for later use
     # session['filename_stem'] = input_path.stem
