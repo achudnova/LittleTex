@@ -1,0 +1,18 @@
+attrs==18.2.0
+blinker==1.9.0
+click==8.2.1
+colorama==0.4.6
+Flask==3.1.1
+iniconfig==2.1.0
+itsdangerous==2.2.0
+Jinja2==3.1.6
+-e git+https://github.com/achudnova/LittleTex.git@eb0159735fbb16562a127740c60745daa66c6a53#egg=littletex
+MarkupSafe==3.0.2
+packaging==25.0
+pdflatex==0.1.3
+pluggy==1.6.0
+pyfiglet==1.0.3
+Pygments==2.19.1
+pytest==8.4.0
+python-dotenv==1.1.1
+Werkzeug==3.1.3
