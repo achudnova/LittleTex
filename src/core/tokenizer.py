@@ -18,6 +18,7 @@ class TokenType(Enum):
     BLANK_LINE = auto()
     LINK = auto()
     IMAGE = auto()
+    CODE_BLOCK = auto()
     EOF = auto()  # End of file token (signifies end of input)
 
 
@@ -59,10 +60,26 @@ class Tokenizer:
     def tokenize(self, markdown_content: str) -> List[Token]:
         # takes the whole md file as a string and returns a list of tokens
         tokens: List[Token] = []
-        # lines = markdown_content.splitlines()
-        for line in markdown_content.splitlines():
-            tokens.append(self._tokenize_line(line))
-
+        lines = markdown_content.splitlines()
+        i = 0
+        while i < len(lines):
+            line = lines[i]
+            
+            if line.strip().startswith("```"):
+                language = line.strip()[3:].strip()
+                code_lines = []
+                i += 1
+                while i < len(lines) and not lines[i].strip().startswith("```"):
+                    code_lines.append(lines[i])
+                    i += 1
+                
+                content = "\n".join(code_lines)
+                tokens.append(Token(TokenType.CODE_BLOCK, value={'language': language, 'content': content}))
+                i += 1
+            else:
+                tokens.append(self._tokenize_line(line))
+                i += 1
+        
         tokens.append(Token(TokenType.EOF))  # Add EOF token at the end
         return tokens
 

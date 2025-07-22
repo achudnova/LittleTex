@@ -6,7 +6,7 @@ Flask==3.1.1
 iniconfig==2.1.0
 itsdangerous==2.2.0
 Jinja2==3.1.6
--e git+https://github.com/achudnova/LittleTex.git@eb0159735fbb16562a127740c60745daa66c6a53#egg=littletex
+-e git+https://github.com/achudnova/LittleTex.git@c9d409f70de2fdbb5b3932559600fd555fed8ed0#egg=littletex
 MarkupSafe==3.0.2
 packaging==25.0
 pdflatex==0.1.3

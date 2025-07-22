@@ -1,6 +1,33 @@
 from pathlib import Path
 from . import ast
 
+LISTINGS_PREAMBLE = r"""
+\usepackage{listings}
+\usepackage{xcolor}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{black!5},
+    commentstyle=\color{green!60!black},
+    keywordstyle=\color{blue},
+    numberstyle=\tiny\color{gray},
+    stringstyle=\color{purple},
+    basicstyle=\ttfamily\small,
+    breakatwhitespace=false,
+    breaklines=true,
+    captionpos=b,
+    keepspaces=true,
+    numbers=left,
+    numbersep=5pt,
+    showspaces=false,
+    showstringspaces=false,
+    showtabs=false,
+    tabsize=2,
+    frame=single,
+    framerule=0.2pt,
+    rulecolor=\color{black!20},
+}
+\lstset{style=mystyle}
+"""
 
 class LatexRenderer:
     """
@@ -37,6 +64,7 @@ class LatexRenderer:
             "\\usepackage[utf8]{inputenc}",
             "\\usepackage{parskip}",
             "\\usepackage{graphicx}",
+            LISTINGS_PREAMBLE,
         ]
         
         if geometry:
@@ -148,6 +176,15 @@ class LatexRenderer:
             f"    \\includegraphics[width=0.8\\textwidth]{{{image_filename}}}",
             f"    \\caption{{{node.caption}}}",
             "\\end{figure}",
+            "", # Add a blank line for spacing
+        ]
+        return lines
+    
+    def visit_code_block(self, node: ast.CodeBlockNode) -> list[str]:
+        lines = [
+            f"\\begin{{lstlisting}}[language={node.language}]",
+            node.content,
+            "\\end{lstlisting}",
             "", # Add a blank line for spacing
         ]
         return lines

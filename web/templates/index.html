@@ -172,11 +172,11 @@
         <form method="POST" action="/convert" enctype="multipart/form-data" id="uploadForm">
             <div class="upload-area" onclick="document.getElementById('file').click()">
                 <div class="upload-icon">🗂️</div>
-                <div class="upload-text">Click to select or drag & drop your Project .zip file</div>
-                <small>Supports: .zip (containing .md, images, etc.)</small>
+                <div class="upload-text">Click to select or drag & drop your file(s)</div>
+                <small>Supports: .md or a .zip for projects with images</small>
                 <br>
                 <small style="color: rebeccapurple;">Max size: 16MB</small>
-                <input type="file" id="file" name="file" accept=".zip">
+                <input type="file" id="file" name="file" accept=".md,.zip">
             </div>
             
             <div class="file-info" id="fileInfo">

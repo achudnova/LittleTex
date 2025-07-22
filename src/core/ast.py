@@ -149,4 +149,14 @@ class ImageNode(Node):
 
     def accept(self, visitor):
         return visitor.visit_image(self)
-    
+
+
+class CodeBlockNode(Node):
+    """Represents a code block (```...```)."""
+
+    def __init__(self, content: str, language: str = "text"):
+        self.content = content
+        self.language = language
+
+    def accept(self, visitor):
+        return visitor.visit_code_block(self)

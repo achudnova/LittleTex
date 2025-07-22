@@ -14,6 +14,7 @@ from .ast import (
     ItalicNode,
     CodeNode,
     LinkNode,
+    CodeBlockNode,
     ImageNode,
 )
 from typing import List
@@ -64,6 +65,8 @@ class Parser:
             return self._parse_indented_text()
         if token_type == TokenType.IMAGE:
             return self._parse_image()
+        if token_type == TokenType.CODE_BLOCK:
+            return self._parse_code_block()
             
 
         self._advance()
@@ -115,6 +118,15 @@ class Parser:
         
         self._advance()
         return ImageNode(alt_text=alt_text, url=url, caption=caption, figure_type=figure_type)
+
+    def _parse_code_block(self) -> CodeBlockNode:
+        """Parses a CODE_BLOCK token into a CodeBlockNode."""
+        token = self._peek()
+        language = token.value.get('language', 'text') or 'text'
+        content = token.value.get("content", "")
+        self._advance()
+        return CodeBlockNode(content=content, language=language)
+
 
     def _parse_heading(self) -> HeadingNode:
         """parses a HEADING token into a HeadingNode"""
