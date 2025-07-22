@@ -1,4 +1,4 @@
-
+import os
 import tempfile
 import uuid
 import zipfile
@@ -8,17 +8,18 @@ from flask import (
     url_for, flash, redirect, session
 )
 from werkzeug.utils import secure_filename
+from dotenv import load_dotenv
 
 # Import your existing application components
 from src.core.app import LittleTexApp
 from src.pipeline.config import PipelineConfig
 
+load_dotenv()
+
 # Initialize the Flask app
 app = Flask(__name__)
 
-# IMPORTANT: Flask needs a "secret key" to handle sessions and flash messages securely.
-# In a real production app, this should be a long, random, secret string.
-app.config['SECRET_KEY'] = 'dev-secret-key-for-littletex'
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'd08fb1b3ebd309b2563c17000923cdffba5f8275b8f661e55022df4b30bc28e0')
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # Set max upload size to 16MB
 
 # Define the allowed file extensions
