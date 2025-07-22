@@ -85,6 +85,34 @@
             border-radius: 6px;
             margin-bottom: 1rem;
             display: none;
+            justify-content: space-between;
+            align-items: center;
+            color: darkslateblue;
+        }
+
+        .file-info-text {
+            flex-grow: 1;
+            text-align: center;
+
+        }
+
+        .file-info-text strong {
+            color: #333;
+            font-weight: 500;
+        }
+
+        .reject-btn {
+            cursor: pointer;
+            color: #888;
+            font-weight: bold;
+            font-size: 2.0rem;
+            padding: 0 0.5rem;
+            line-height: 1;
+            transition: color 0.2s ease;
+        }
+
+        .reject-btn:hover {
+            color: #d9534f; 
         }
         
         .convert-btn {
@@ -180,7 +208,10 @@
             </div>
             
             <div class="file-info" id="fileInfo">
-                <strong>Selected file:</strong> <span id="fileName"></span>
+                <div class="file-info-text">
+                    <strong>Selected file:</strong> <span id="fileName"></span>
+                </div>
+                <span class="reject-btn" id="rejectBtn" title="Deselect file">×</span>
             </div>
             
             <button type="submit" class="convert-btn" id="convertBtn" disabled>
@@ -207,13 +238,27 @@
         const convertBtn = document.getElementById('convertBtn');
         const fileInfo = document.getElementById('fileInfo');
         const fileName = document.getElementById('fileName');
+        const rejectBtn = document.getElementById('rejectBtn');
+
+        function resetForm() {
+            fileInput.value = null; // This is the most important part! It clears the file.
+            fileInfo.style.display = 'none'; // Hide the info box
+            convertBtn.disabled = true; // Disable the convert button
+        }
+
+        rejectBtn.addEventListener('click', function() {
+            resetForm();
+        });
         
         fileInput.addEventListener('change', function(e) {
             if (e.target.files.length > 0) {
                 const file = e.target.files[0];
                 fileName.textContent = file.name;
-                fileInfo.style.display = 'block';
+                fileInfo.style.display = 'flex';
                 convertBtn.disabled = false;
+            }
+            else {
+                resetForm();
             }
         });
         
@@ -236,7 +281,7 @@
                 fileInput.files = files;
                 const file = files[0];
                 fileName.textContent = file.name;
-                fileInfo.style.display = 'block';
+                fileInfo.style.display = 'flex';
                 convertBtn.disabled = false;
             }
         });
