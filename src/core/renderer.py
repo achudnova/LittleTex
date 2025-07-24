@@ -38,6 +38,7 @@ class LatexRenderer:
     def __init__(self):
         # self.am_parser = AsciiMath(log=False, inplace=True)
         self.math_mode = 'latex'
+        self.am_parser = None
 
     def render(self, document_node: ast.DocumentNode, metadata: dict) -> str:
         """
@@ -57,6 +58,19 @@ class LatexRenderer:
         postamble = "\n\\end{document}"
 
         return preamble + body + postamble
+    
+    def _get_asciimath_parser(self):
+        """
+        Returns the existing AsciiMath parser instance.
+        If one doesn't exist, it creates it first.
+        """
+        # If we haven't created the parser yet...
+        if self.am_parser is None:
+            print("INFO: Initializing AsciiMath translator...")
+            # ...create it now and save it for future use.
+            self.am_parser = AsciiMath(log=False)
+        # Return the (now guaranteed to exist) parser.
+        return self.am_parser
 
     def _generate_preamble(self, metadata: dict) -> str:
         """Generates the LaTeX preamble using the provided metadata."""
@@ -199,16 +213,16 @@ class LatexRenderer:
     def visit_inline_math(self, node: ast.InlineMathNode) -> str:
         """Renders an InlineMathNode into $...$"""
         if self.math_mode == 'asciimath':
-            am_parser = AsciiMath(log=False)
-            return am_parser.translate(node.content) or ""
+            parser = self._get_asciimath_parser()
+            return parser.translate(node.content) or ""
         else:
             return f"${node.content}$"
 
     def visit_block_math(self, node: ast.BlockMathNode) -> list[str]:
         """Renders a BlockMathNode into a LaTeX block math environment."""
         if self.math_mode == 'asciimath':
-            am_parser = AsciiMath(log=False)
-            content = am_parser.translate(node.content, displaystyle=True) or ""
+            parser = self._get_asciimath_parser()
+            content = parser.translate(node.content, displaystyle=True) or ""
             return [content, ""]
         else:
             lines = [
