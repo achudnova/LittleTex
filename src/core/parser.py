@@ -88,18 +88,25 @@ class Parser:
             if match.start() > last_index:
                 nodes.append(TextNode(text[last_index : match.start()]))
 
-            if match.group(1) is not None:  # Bold
+            # Group 1: Bold
+            if match.group(1) is not None:
                 nodes.append(BoldNode(self._parse_inline_elements(match.group(1))))
-            elif match.group(2) is not None:  # Italic
+            # Group 2: Italic
+            elif match.group(2) is not None:
                 nodes.append(ItalicNode(self._parse_inline_elements(match.group(2))))
-            elif match.group(3) is not None:  # Inline code
+            # Group 3: Inline Code
+            elif match.group(3) is not None:
                 nodes.append(CodeNode(match.group(3)))
-            elif match.group(4) is not None:  # Link
-                link_text_nodes = self._parse_inline_elements(match.group(4))
-                nodes.append(LinkNode(url=match.group(5), children=link_text_nodes))
-            elif match.group(6) is not None:  # Inline math
-                nodes.append(InlineMathNode(match.group(6)))
-            
+            # Group 4 & 5: Image
+            elif match.group(4) is not None:
+                nodes.append(ImageNode(alt_text=match.group(4), url=match.group(5), caption=match.group(4)))
+            # Group 6 & 7: Link
+            elif match.group(6) is not None:
+                link_text_nodes = self._parse_inline_elements(match.group(6))
+                nodes.append(LinkNode(url=match.group(7), children=link_text_nodes))
+            # Group 8: Inline Math
+            elif match.group(8) is not None:
+                nodes.append(InlineMathNode(match.group(8)))
 
             last_index = match.end()
 

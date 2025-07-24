@@ -1,3 +1,4 @@
+from py_asciimath.translator.translator import ASCIIMath2Tex as AsciiMath
 from pathlib import Path
 from . import ast
 
@@ -34,12 +35,17 @@ class LatexRenderer:
     Implements the Visitor pattern. It walks the AST and generates a complete
     LaTeX document string, including the preamble and metadata.
     """
+    def __init__(self):
+        # self.am_parser = AsciiMath(log=False, inplace=True)
+        self.math_mode = 'latex'
 
     def render(self, document_node: ast.DocumentNode, metadata: dict) -> str:
         """
         The main public method. Takes the AST root and metadata, and returns
         the complete, final LaTeX document as a single string.
         """
+        self.math_mode = metadata.get('math_mode', 'latex').lower()
+        
         preamble = self._generate_preamble(metadata)
 
         # This is the main visitor entry point, which generates the document body
@@ -192,15 +198,25 @@ class LatexRenderer:
     
     def visit_inline_math(self, node: ast.InlineMathNode) -> str:
         """Renders an InlineMathNode into $...$"""
-        return f"${node.content}$" # return string
+        if self.math_mode == 'asciimath':
+            am_parser = AsciiMath(log=False)
+            return am_parser.translate(node.content) or ""
+        else:
+            return f"${node.content}$"
 
     def visit_block_math(self, node: ast.BlockMathNode) -> list[str]:
         """Renders a BlockMathNode into a LaTeX block math environment."""
-        lines = [
-            "\\begin{equation*}",
-            node.content,
-            "\\end{equation*}",
-            "",  # Add a blank line for spacing
-        ]
-        return lines
+        if self.math_mode == 'asciimath':
+            am_parser = AsciiMath(log=False)
+            content = am_parser.translate(node.content, displaystyle=True) or ""
+            return [content, ""]
+        else:
+            lines = [
+                "\\begin{equation*}",
+                node.content,
+                "\\end{equation*}",
+                "",
+            ]
+            return lines
+
         
