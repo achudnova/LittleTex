@@ -160,3 +160,23 @@ class CodeBlockNode(Node):
 
     def accept(self, visitor):
         return visitor.visit_code_block(self)
+    
+    
+class InlineMathNode(Node):
+    """Represents an inline math formula ($...$)."""
+
+    def __init__(self, content: str):
+        self.content = content
+
+    def accept(self, visitor):
+        return visitor.visit_inline_math(self)
+
+
+class BlockMathNode(Node):
+    """Represents a block math formula ($$...$$)."""
+
+    def __init__(self, content: str):
+        self.content = content
+
+    def accept(self, visitor):
+        return visitor.visit_block_math(self)

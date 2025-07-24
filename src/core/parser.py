@@ -16,6 +16,8 @@ from .ast import (
     LinkNode,
     CodeBlockNode,
     ImageNode,
+    InlineMathNode,
+    BlockMathNode,
 )
 from typing import List
 import re
@@ -67,6 +69,8 @@ class Parser:
             return self._parse_image()
         if token_type == TokenType.CODE_BLOCK:
             return self._parse_code_block()
+        if token_type == TokenType.BLOCK_MATH:
+            return self._parse_block_math()
             
 
         self._advance()
@@ -74,7 +78,9 @@ class Parser:
 
     def _parse_inline_elements(self, text: str) -> List[Node]:
         """parses a string for inline elements like bold, italic, links, etc."""
-        pattern = re.compile(r"\*{2}(.*?)\*{2}|\*(.*?)\*|`(.*?)`|\[(.*?)\]\((.*?)\)")
+        pattern = re.compile(
+            r"\*{2}(.*?)\*{2}|\*(.*?)\*|`(.*?)`|!\[(.*?)\]\((.*?)\)|\[(.*?)\]\((.*?)\)|\$(.*?)\$"
+        )
         nodes = []
         last_index = 0
 
@@ -91,6 +97,9 @@ class Parser:
             elif match.group(4) is not None:  # Link
                 link_text_nodes = self._parse_inline_elements(match.group(4))
                 nodes.append(LinkNode(url=match.group(5), children=link_text_nodes))
+            elif match.group(6) is not None:  # Inline math
+                nodes.append(InlineMathNode(match.group(6)))
+            
 
             last_index = match.end()
 
@@ -98,6 +107,12 @@ class Parser:
             nodes.append(TextNode(text[last_index:]))
 
         return nodes
+    
+    def _parse_block_math(self) -> BlockMathNode:
+        """Parses a BLOCK_MATH token into a BlockMathNode."""
+        token = self._peek()
+        self._advance()
+        return BlockMathNode(content=token.value)
     
     def _parse_image(self) -> ImageNode:
         """Parses an IMAGE token into an ImageNode."""

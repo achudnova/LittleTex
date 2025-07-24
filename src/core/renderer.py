@@ -64,6 +64,7 @@ class LatexRenderer:
             "\\usepackage[utf8]{inputenc}",
             "\\usepackage{parskip}",
             "\\usepackage{graphicx}",
+            "\\usepackage{amsmath}",
             LISTINGS_PREAMBLE,
         ]
         
@@ -188,3 +189,18 @@ class LatexRenderer:
             "", # Add a blank line for spacing
         ]
         return lines
+    
+    def visit_inline_math(self, node: ast.InlineMathNode) -> str:
+        """Renders an InlineMathNode into $...$"""
+        return f"${node.content}$" # return string
+
+    def visit_block_math(self, node: ast.BlockMathNode) -> list[str]:
+        """Renders a BlockMathNode into a LaTeX block math environment."""
+        lines = [
+            "\\begin{equation*}",
+            node.content,
+            "\\end{equation*}",
+            "",  # Add a blank line for spacing
+        ]
+        return lines
+        

@@ -19,6 +19,7 @@ class TokenType(Enum):
     LINK = auto()
     IMAGE = auto()
     CODE_BLOCK = auto()
+    BLOCK_MATH = auto()
     EOF = auto()  # End of file token (signifies end of input)
 
 
@@ -65,7 +66,18 @@ class Tokenizer:
         while i < len(lines):
             line = lines[i]
             
-            if line.strip().startswith("```"):
+            if line.strip() == "$$":
+                math_lines = []
+                i += 1 # move to the next line
+                while i < len(lines) and not lines[i].strip() == "$$":
+                    math_lines.append(lines[i])
+                    i += 1
+                
+                content = "\n".join(math_lines)
+                tokens.append(Token(TokenType.BLOCK_MATH, value=content))
+                i += 1  # skip the closing $$ line
+            
+            elif line.strip().startswith("```"):
                 language = line.strip()[3:].strip()
                 code_lines = []
                 i += 1
