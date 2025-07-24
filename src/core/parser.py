@@ -28,6 +28,20 @@ class Parser:
     def __init__(self, tokens: List[Token]):
         self.tokens = tokens
         self.current_token_index = 0
+        
+        # Map token types to their parsing methods
+        self.statement_parsers = {
+            TokenType.HEADING: self._parse_heading,
+            TokenType.BULLET_ITEM: self._parse_list,
+            TokenType.NUMBERED_ITEM: self._parse_list,
+            TokenType.PARAGRAPH: self._parse_paragraph,
+            TokenType.HORIZONTAL_RULE: self._parse_horizontal_rule,
+            TokenType.BLANK_LINE: self._parse_blank_line,
+            TokenType.INDENTED_TEXT: self._parse_indented_text,
+            TokenType.IMAGE: self._parse_image,
+            TokenType.CODE_BLOCK: self._parse_code_block,
+            TokenType.BLOCK_MATH: self._parse_block_math,
+        }
 
     def _peek(self) -> Token:
         """looks at the current token without consuming it"""
@@ -51,36 +65,52 @@ class Parser:
     def _parse_statement(self) -> Node:
         """determines the type of the current token and calls the appropriate method to parse it"""
         token_type = self._peek().type
+        
+        parser_method = self.statement_parsers.get(token_type)
+        
+        if parser_method:
+            return parser_method()
 
-        if token_type == TokenType.HEADING:
-            return self._parse_heading()
-        if token_type in [TokenType.BULLET_ITEM, TokenType.NUMBERED_ITEM]:
-            return self._parse_list()
-        if token_type == TokenType.PARAGRAPH:
-            return self._parse_paragraph()
-        if token_type == TokenType.HORIZONTAL_RULE:
-            return self._parse_horizontal_rule()
-        if token_type == TokenType.BLANK_LINE:
-            self._advance()
-            return BlankLineNode()
-        if token_type == TokenType.INDENTED_TEXT:
-            return self._parse_indented_text()
-        if token_type == TokenType.IMAGE:
-            return self._parse_image()
-        if token_type == TokenType.CODE_BLOCK:
-            return self._parse_code_block()
-        if token_type == TokenType.BLOCK_MATH:
-            return self._parse_block_math()
+        # if token_type == TokenType.HEADING:
+        #     return self._parse_heading()
+        
+        # if token_type in [TokenType.BULLET_ITEM, TokenType.NUMBERED_ITEM]:
+        #     return self._parse_list()
+        # if token_type == TokenType.PARAGRAPH:
+        #     return self._parse_paragraph()
+        # if token_type == TokenType.HORIZONTAL_RULE:
+        #     return self._parse_horizontal_rule()
+        # if token_type == TokenType.BLANK_LINE:
+        #     self._advance()
+        #     return BlankLineNode()
+        # if token_type == TokenType.INDENTED_TEXT:
+        #     return self._parse_indented_text()
+        # if token_type == TokenType.IMAGE:
+        #     return self._parse_image()
+        # if token_type == TokenType.CODE_BLOCK:
+        #     return self._parse_code_block()
+        # if token_type == TokenType.BLOCK_MATH:
+        #     return self._parse_block_math()
             
 
         self._advance()
         return None
 
+    def _parse_blank_line(self) -> BlankLineNode:
+        """parses a BLANK_LINE token into a BlankLineNode"""
+        self._advance()
+        return BlankLineNode()
+    
     def _parse_inline_elements(self, text: str) -> List[Node]:
         """parses a string for inline elements like bold, italic, links, etc."""
-        pattern = re.compile(
-            r"\*{2}(.*?)\*{2}|\*(.*?)\*|`(.*?)`|!\[(.*?)\]\((.*?)\)|\[(.*?)\]\((.*?)\)|\$(.*?)\$"
-        )
+        pattern = re.compile(r"""
+            \*{2}(.*?)\*{2}         # Group 1: Bold (**...**)
+            | \*(.*?)\*             # Group 2: Italic (*...*)
+            | `(.*?)`               # Group 3: Inline Code (`...`)
+            | !\[(.*?)\]\((.*?)\)   # Groups 4 & 5: Image (![...](...))
+            | \[(.*?)\]\((.*?)\)    # Groups 6 & 7: Link ([...](...))
+            | \$(.*?)\$             # Group 8: Inline Math ($...$)
+        """, re.VERBOSE)
         nodes = []
         last_index = 0
 
