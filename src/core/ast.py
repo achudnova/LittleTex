@@ -180,3 +180,10 @@ class BlockMathNode(Node):
 
     def accept(self, visitor):
         return visitor.visit_block_math(self)
+    
+    
+class ForcedBreakNode(Node):
+    """Represents an intentional vertical space (two blank lines in a row)."""
+
+    def accept(self, visitor):
+        return visitor.visit_forced_break(self)

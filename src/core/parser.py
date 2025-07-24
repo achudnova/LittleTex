@@ -18,6 +18,7 @@ from .ast import (
     ImageNode,
     InlineMathNode,
     BlockMathNode,
+    ForcedBreakNode,
 )
 from typing import List
 import re
@@ -96,8 +97,16 @@ class Parser:
         self._advance()
         return None
 
-    def _parse_blank_line(self) -> BlankLineNode:
+    def _parse_blank_line(self) -> Node:
         """parses a BLANK_LINE token into a BlankLineNode"""
+        if (self.current_token_index + 1) < len(self.tokens):
+            next_token = self.tokens[self.current_token_index + 1]
+            if next_token.type == TokenType.BLANK_LINE:
+                # If the next token is also a blank line, we skip it
+                self._advance()
+                self._advance()
+                return ForcedBreakNode()
+
         self._advance()
         return BlankLineNode()
     
