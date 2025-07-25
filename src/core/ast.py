@@ -206,3 +206,10 @@ class TableNode(Node):
 
     def accept(self, visitor):
         return visitor.visit_table(self)
+
+
+class PageBreakNode(Node):
+    """Represents a hard page break command (@newpage)."""
+
+    def accept(self, visitor):
+        return visitor.visit_page_break(self)

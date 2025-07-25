@@ -21,6 +21,7 @@ class TokenType(Enum):
     CODE_BLOCK = auto()
     BLOCK_MATH = auto()
     TABLE = auto()
+    PAGE_BREAK = auto()
     EOF = auto()  # End of file token (signifies end of input)
 
 
@@ -56,6 +57,7 @@ class Tokenizer:
         (TokenType.HORIZONTAL_RULE, re.compile(r"^---$")),
         (TokenType.INDENTED_TEXT, re.compile(r"^>>\s(.*)")),
         (TokenType.IMAGE, re.compile(r"^!\[(.*?)\]\((.*?)\)$")),
+        (TokenType.PAGE_BREAK, re.compile(r"^@newpage.*$")),
     ]
 
     # scan the raw md text & convert it into a list of Token objects
@@ -146,4 +148,9 @@ class Tokenizer:
             alt_text = match.group(1)
             url = match.group(2)
             return Token(token_type, value={"alt": alt_text, "url": url})
+        
+        if token_type == TokenType.PAGE_BREAK:
+            return Token(token_type)
+        
+        raise ValueError(f"Unknown token type: {token_type}")
         

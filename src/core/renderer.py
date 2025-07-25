@@ -144,6 +144,10 @@ class LatexRenderer:
         """This is the key: it preserves intentional blank lines."""
         return [""]
 
+    def visit_page_break(self, node: ast.PageBreakNode) -> list[str]:
+        """Renders a PageBreakNode into a \newpage command."""
+        return ["\\newpage"]
+
     def visit_list(self, node: ast.ListNode) -> list[str]:
         env_name = node.list_type
         lines = [f"\\begin{{{env_name}}}"]
