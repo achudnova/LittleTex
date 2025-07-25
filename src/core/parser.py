@@ -290,5 +290,4 @@ class Parser:
             headers=headers, 
             rows=rows, 
             caption=metadata.get('caption', ''),
-            label=metadata.get('label', '')
         )

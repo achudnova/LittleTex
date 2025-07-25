@@ -248,13 +248,10 @@ class LatexRenderer:
         latex_align = "|" + "|".join(['l'] * num_columns) + "|"
         
         lines = ["\\begin{table}[H]"]
-        if node.caption: 
-            lines.append("   \\caption{{{}}}".format(node.caption))
-        if node.label: 
-            lines.append("   \\label{{{}}}".format(node.label))
             
         lines.extend([
-            "   \\centering", "   \\small",
+            "   \\centering", 
+            "   \\small",
             "   \\begin{{tabular}}{{{}}}".format(latex_align),
             "   \\toprule"
         ])
@@ -266,8 +263,16 @@ class LatexRenderer:
             lines.append("   {} \\\\".format(' & '.join(row)))
         
         lines.extend([
-            "   \\bottomrule", "   \\end{tabular}",
-            "\\end{table}", ""
+            "   \\bottomrule", 
+            "   \\end{tabular}",
+        ])
+        
+        if node.caption: 
+            lines.append("   \\caption{{{}}}".format(node.caption))
+            
+        lines.extend([
+            "\\end{table}",
+            ""
         ])
         
         return lines

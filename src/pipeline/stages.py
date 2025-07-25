@@ -112,8 +112,11 @@ class CopyAssetsStage(Stage):
             source_path = self.input_dir / node.url
             dest_path = self.output_dir / Path(node.url).name
 
-            if source_path.is_file():
-                print(f"> Copying asset: {source_path} to {dest_path}")
-                shutil.copy(source_path, dest_path)
+            if source_path.resolve() != dest_path.resolve():
+                if source_path.is_file():
+                    print(f"> Copying asset: {source_path} to {dest_path}")
+                    shutil.copy(source_path, dest_path)
+                else:
+                    print(f"Warning: Image file not found at {source_path}")
             else:
-                print(f"Warning: Image file not found at {source_path}")
+                print(f"> Asset already in destination, skipping copy: {source_path}")

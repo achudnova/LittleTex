@@ -197,12 +197,10 @@ class TableNode(Node):
         headers: List[str],
         rows: List[List[str]],
         caption: str = "",
-        label: str = "",
     ):
         self.headers = headers
         self.rows = rows
         self.caption = caption
-        self.label = label
 
     def accept(self, visitor):
         return visitor.visit_table(self)
