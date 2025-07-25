@@ -178,7 +178,16 @@ class LatexRenderer:
         return f"\\textit{{{content}}}"
 
     def visit_code(self, node: ast.CodeNode) -> str:
-        return f"\\texttt{{{node.text}}}"
+        escaped_text = node.text.replace('\\', '\\textbackslash{}') \
+                                .replace('_', '\\_') \
+                                .replace('{', '\\{') \
+                                .replace('}', '\\}') \
+                                .replace('^', '\\^{}') \
+                                .replace('&', '\\&') \
+                                .replace('%', '\\%') \
+                                .replace('#', '\\#') \
+                                .replace('$', '\\$')
+        return "\\texttt{{{}}}".format(escaped_text)
 
     def visit_link(self, node: ast.LinkNode) -> str:
         content = "".join(child.accept(self) for child in node.children)
