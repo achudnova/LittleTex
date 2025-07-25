@@ -184,6 +184,8 @@ class BlockMathNode(Node):
     
 class ForcedBreakNode(Node):
     """Represents an intentional vertical space (two blank lines in a row)."""
+    def __init__(self, num_lines: int):
+        self.num_lines = num_lines
 
     def accept(self, visitor):
         return visitor.visit_forced_break(self)

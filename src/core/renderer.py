@@ -137,7 +137,8 @@ class LatexRenderer:
     def visit_forced_break(self, node: ast.ForcedBreakNode) -> list[str]:
         """Renders a ForcedBreakNode into an explicit vertical space."""
         # \par ends the current paragraph, \vspace adds one line's worth of space.
-        return ["\\par\\vspace{\\baselineskip}"]
+        space_amount = node.num_lines
+        return ["\\par\\vspace{{{}em}}".format(space_amount)]
 
     def visit_blank_line(self, node: ast.BlankLineNode) -> list[str]:
         """This is the key: it preserves intentional blank lines."""

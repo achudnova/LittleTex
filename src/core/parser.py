@@ -100,15 +100,18 @@ class Parser:
         return None
 
     def _parse_blank_line(self) -> Node:
-        """parses a BLANK_LINE token into a BlankLineNode"""
+        # Check for multiple blank lines to create a forced break.
         if (self.current_token_index + 1) < len(self.tokens):
             next_token = self.tokens[self.current_token_index + 1]
             if next_token.type == TokenType.BLANK_LINE:
-                # If the next token is also a blank line, we skip it
+                # Consume both blank line tokens
+                self._advance() 
                 self._advance()
-                self._advance()
-                return ForcedBreakNode()
+                # --- FIX #2: Call ForcedBreakNode with the required argument ---
+                # Two blank lines create one line of extra space.
+                return ForcedBreakNode(num_lines=1)
 
+        # If it's just a single blank line, parse it normally.
         self._advance()
         return BlankLineNode()
     
