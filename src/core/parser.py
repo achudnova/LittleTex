@@ -19,6 +19,7 @@ from .ast import (
     InlineMathNode,
     BlockMathNode,
     ForcedBreakNode,
+    TableNode,
 )
 from typing import List
 import re
@@ -42,6 +43,7 @@ class Parser:
             TokenType.IMAGE: self._parse_image,
             TokenType.CODE_BLOCK: self._parse_code_block,
             TokenType.BLOCK_MATH: self._parse_block_math,
+            TokenType.TABLE: self._parse_table,
         }
 
     def _peek(self) -> Token:
@@ -258,3 +260,35 @@ class Parser:
             else:
                 break
         return list_node
+
+    def _parse_table(self) -> TableNode:
+        token = self._peek()
+        lines = [line for line in token.value.strip().split('\n') if line.strip()]
+        
+        metadata = {}
+        data_lines = []
+        
+        for line in lines:
+            if ":" in line and "|" not in line:
+                key, value = line.split(":", 1)
+                metadata[key.strip().lower()] = value.strip()
+            else:
+                data_lines.append(line)
+        
+        headers = []
+        rows = []
+        
+        if len(data_lines) >= 2:
+            headers = [h.strip() for h in data_lines[0].strip('| \t').split('|')]
+            for row_line in data_lines[2:]:
+                row = [cell.strip() for cell in row_line.strip('| \t').split('|')]
+                rows.append(row)
+        
+        self._advance()
+        
+        return TableNode(
+            headers=headers, 
+            rows=rows, 
+            caption=metadata.get('caption', ''),
+            label=metadata.get('label', '')
+        )

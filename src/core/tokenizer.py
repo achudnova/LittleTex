@@ -20,6 +20,7 @@ class TokenType(Enum):
     IMAGE = auto()
     CODE_BLOCK = auto()
     BLOCK_MATH = auto()
+    TABLE = auto()
     EOF = auto()  # End of file token (signifies end of input)
 
 
@@ -66,7 +67,20 @@ class Tokenizer:
         while i < len(lines):
             line = lines[i]
             
-            if line.strip() == "$$":
+            if line.strip().lower() == "::: table":
+                # Start of a table
+                table_lines = []
+                i += 1
+                while i < len(lines) and not lines[i].strip() == ":::":
+                    table_lines.append(lines[i])
+                    i += 1
+                
+                content = "\n".join(table_lines)
+                tokens.append(Token(TokenType.TABLE, value=content))
+                i += 1
+
+            
+            elif line.strip() == "$$":
                 math_lines = []
                 i += 1 # move to the next line
                 while i < len(lines) and not lines[i].strip() == "$$":

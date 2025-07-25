@@ -56,6 +56,9 @@ def generate_pdf_from_latex(tex_file: str) -> Tuple[bool, Optional[str]]:
         elif os.path.exists(pdf_path):
             # LaTeX returned warning/error code but PDF was still generated
             print(f"⚠️  PDF generated with warnings: {pdf_path}")
+            print("   --- LaTeX Log ---")
+            print(result.stdout)
+
             if "File `image.png' not found" in result.stdout:
                 print("   Note: Missing image file 'image.png' - using draft mode")
             return True, pdf_path

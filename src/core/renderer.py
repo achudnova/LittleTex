@@ -85,6 +85,8 @@ class LatexRenderer:
             "\\usepackage{parskip}",
             "\\usepackage{graphicx}",
             "\\usepackage{amsmath}",
+            "\\usepackage{booktabs}",
+            "\\usepackage{float}",
             LISTINGS_PREAMBLE,
         ]
         
@@ -238,3 +240,34 @@ class LatexRenderer:
             ]
             return lines
 
+    def visit_table(self, node: ast.TableNode) -> list[str]:
+        if not node.headers:
+            return []
+            
+        num_columns = len(node.headers)
+        latex_align = "|" + "|".join(['l'] * num_columns) + "|"
+        
+        lines = ["\\begin{table}[H]"]
+        if node.caption: 
+            lines.append("   \\caption{{{}}}".format(node.caption))
+        if node.label: 
+            lines.append("   \\label{{{}}}".format(node.label))
+            
+        lines.extend([
+            "   \\centering", "   \\small",
+            "   \\begin{{tabular}}{{{}}}".format(latex_align),
+            "   \\toprule"
+        ])
+        
+        lines.append("   {} \\\\".format(' & '.join([f'\\textbf{{{h}}}' for h in node.headers])))
+        lines.append("   \\midrule")
+        
+        for row in node.rows:
+            lines.append("   {} \\\\".format(' & '.join(row)))
+        
+        lines.extend([
+            "   \\bottomrule", "   \\end{tabular}",
+            "\\end{table}", ""
+        ])
+        
+        return lines
