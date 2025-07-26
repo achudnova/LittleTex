@@ -213,3 +213,10 @@ class PageBreakNode(Node):
 
     def accept(self, visitor):
         return visitor.visit_page_break(self)
+
+
+class TocNode(Node):
+    """Represents a table of contents command (@toc)."""
+
+    def accept(self, visitor):
+        return visitor.visit_toc(self)

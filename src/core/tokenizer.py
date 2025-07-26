@@ -22,6 +22,7 @@ class TokenType(Enum):
     BLOCK_MATH = auto()
     TABLE = auto()
     PAGE_BREAK = auto()
+    TOC = auto()
     EOF = auto()  # End of file token (signifies end of input)
 
 
@@ -51,6 +52,7 @@ class Tokenizer:
     # list of tuples, where each tuple contains:
     # token type and a compiled regular expression to match the token
     TOKEN_RULES = [
+        (TokenType.TOC, re.compile(r"^(@toc)$")),
         (TokenType.HEADING, re.compile(r"^(#{1,3})\s*(.*)")),
         (TokenType.BULLET_ITEM, re.compile(r"^\-\s+(.*)")),
         (TokenType.NUMBERED_ITEM, re.compile(r"^\d+\.\s+(.*)")),
@@ -80,8 +82,7 @@ class Tokenizer:
                 content = "\n".join(table_lines)
                 tokens.append(Token(TokenType.TABLE, value=content))
                 i += 1
-
-            
+                
             elif line.strip() == "$$":
                 math_lines = []
                 i += 1 # move to the next line
@@ -104,11 +105,18 @@ class Tokenizer:
                 content = "\n".join(code_lines)
                 tokens.append(Token(TokenType.CODE_BLOCK, value={'language': language, 'content': content}))
                 i += 1
+            
             else:
                 tokens.append(self._tokenize_line(line))
                 i += 1
         
         tokens.append(Token(TokenType.EOF))  # Add EOF token at the end
+        
+        print("\n--- TOKENIZER OUTPUT ---")
+        for token in tokens:
+            print(token)
+        print("------------------------\n")
+        
         return tokens
 
     def _tokenize_line(self, line: str) -> Token:
@@ -150,6 +158,9 @@ class Tokenizer:
             return Token(token_type, value={"alt": alt_text, "url": url})
         
         if token_type == TokenType.PAGE_BREAK:
+            return Token(token_type)
+        
+        if token_type == TokenType.TOC:
             return Token(token_type)
         
         raise ValueError(f"Unknown token type: {token_type}")

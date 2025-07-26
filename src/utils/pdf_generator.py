@@ -36,6 +36,13 @@ def generate_pdf_from_latex(tex_file: str) -> Tuple[bool, Optional[str]]:
             text=True
         )
         
+        result = subprocess.run(
+            ["pdflatex", "-interaction=nonstopmode", base_name],
+            cwd=tex_dir,
+            capture_output=True,
+            text=True
+        )
+        
         # get the pdf filename
         pdf_file = os.path.splitext(base_name)[0] + ".pdf"
         pdf_path = os.path.join(tex_dir, pdf_file)

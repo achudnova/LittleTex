@@ -21,6 +21,7 @@ from .ast import (
     ForcedBreakNode,
     TableNode,
     PageBreakNode,
+    TocNode,
 )
 from typing import List
 import re
@@ -46,6 +47,7 @@ class Parser:
             TokenType.BLOCK_MATH: self._parse_block_math,
             TokenType.TABLE: self._parse_table,
             TokenType.PAGE_BREAK: self._parse_page_break,
+            TokenType.TOC: self._parse_toc,
         }
 
     def _peek(self) -> Token:
@@ -66,6 +68,11 @@ class Parser:
             if node:
                 document.children.append(node)
         return document
+    
+    def _parse_toc(self) -> TocNode:
+        """Parses a TOC token into a TocNode."""
+        self._advance()
+        return TocNode()
     
     def _parse_page_break(self) -> PageBreakNode:
         """Parses a PAGE_BREAK token into a PageBreakNode."""

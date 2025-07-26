@@ -290,3 +290,9 @@ class LatexRenderer:
         ])
         
         return lines
+    
+    def visit_toc(self, node: ast.TocNode) -> list[str]:
+        """Renders a TocNode into a table of contents."""
+        table_of_contents = "\\tableofcontents\n"
+
+        return table_of_contents.splitlines()
