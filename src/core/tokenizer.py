@@ -44,16 +44,13 @@ class Token:
 
 
 class Tokenizer:
-    # --- REFACTORED: Moved all rules to one central place ---
 
-    # Rules for blocks that consume multiple lines
     MULTI_LINE_BLOCK_RULES = {
         "```": (TokenType.CODE_BLOCK, "```"),
         "$$": (TokenType.BLOCK_MATH, "$$"),
         "::: table": (TokenType.TABLE, ":::"),
     }
 
-    # Rules for single-line tokens, checked in order of specificity
     SINGLE_LINE_TOKEN_RULES = [
         (TokenType.TOC, re.compile(r"^@toc$")),
         (TokenType.PAGE_BREAK, re.compile(r"^@newpage.*$")),
@@ -66,10 +63,7 @@ class Tokenizer:
     ]
 
     def tokenize(self, markdown_content: str) -> List[Token]:
-        """
-        Tokenizes the entire document using a state machine approach.
-        This is cleaner and more extensible than the previous version.
-        """
+        """Tokenizes the entire document using a state machine approach."""
         tokens: List[Token] = []
         lines = markdown_content.splitlines()
         i = 0
