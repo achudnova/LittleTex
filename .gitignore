@@ -12,3 +12,7 @@ output/
 .env
 .pytest_cache/
 docs/
+venv/
+*.DS_Store
+.idea/
+.requirements.txt.swp
